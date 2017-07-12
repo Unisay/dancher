@@ -1,7 +1,8 @@
 module Main where
 
-import Protolude
 import Lib
+import Protolude
+import Network.Wai.Handler.Warp (run)
 
 main :: IO ()
-main = someFunc
+main = run 8081 application

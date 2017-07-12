@@ -6,15 +6,15 @@ This is a haddock comment describing your library
 For more information on how to write Haddock comments check the user guide:
 <https://www.haskell.org/haddock/doc/html/index.html>
 -}
-module Lib
-    ( someFunc
-    ) where
+module Lib ( application ) where
 
 import Lib.Prelude
+import Network.Wai
+import Servant (serve)
+import Server
+import Api
 
--- | Prints someFunc
---
--- >>> someFunc 10
--- someFunc
-someFunc :: IO ()
-someFunc = putStrLn ("someFunc" :: Text)
+application :: Application
+application = serve topicApi server where
+  topicApi :: Proxy TopicApi
+  topicApi = Proxy
