@@ -6,7 +6,6 @@ import Lib.Prelude
 import Data.Time (UTCTime)
 import Data.Aeson
 import Data.Aeson.Types
-import Data.Char (toLower)
 
 type TopicId = Int
 
@@ -21,4 +20,4 @@ instance Eq Topic where
   (==) t1 t2 = getTopicId t1 == getTopicId t2
 
 instance ToJSON Topic where
-  toJSON = genericToJSON defaultOptions { fieldLabelModifier = fmap toLower . drop 8  }
+  toJSON = genericToJSON defaultOptions { fieldLabelModifier = camelTo2 '_' . drop 8  }
