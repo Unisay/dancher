@@ -13,5 +13,5 @@ all =
 lookup :: TopicId -> Maybe Topic
 lookup id = find ((== id) . getTopicId) all
 
-upsert :: Topic -> ()
-upsert _ = () -- TODO
+upsert :: Topic -> IO ()
+upsert _ = return () -- TODO

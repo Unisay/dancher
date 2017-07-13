@@ -22,5 +22,5 @@ lookupTopicHandler = maybe (throwError err404) return . Topics.lookup
 upsertTopicHandler :: TopicId -> Topic -> Handler Topic
 upsertTopicHandler id topic = do
   let newTopic = topic { getTopicId = id }
-  _ <- return $ Topics.upsert newTopic -- TODO find a better syntax?
+  _ <- liftIO $ Topics.upsert newTopic
   return newTopic
