@@ -19,5 +19,15 @@ data Topic = Topic
 instance Eq Topic where
   (==) t1 t2 = getTopicId t1 == getTopicId t2
 
+topicJsonOpts :: Options
+topicJsonOpts = defaultOptions {
+    fieldLabelModifier = camelCase . stripPrefix
+  } where
+  camelCase = camelTo2 '_'
+  stripPrefix = drop 8
+
 instance ToJSON Topic where
-  toJSON = genericToJSON defaultOptions { fieldLabelModifier = camelTo2 '_' . drop 8  }
+  toJSON = genericToJSON topicJsonOpts
+
+instance FromJSON Topic where
+  parseJSON = genericParseJSON topicJsonOpts
