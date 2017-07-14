@@ -23,8 +23,13 @@ lookupTopicHandler = maybe (throwError err404) return . Topics.lookup
 upsertTopicHandler :: TopicId -> Topic -> Handler Topic
 upsertTopicHandler id topic = do
   let newTopic = topic { getTopicId = id }
-  _ <- liftIO $ Topics.upsert newTopic
+  liftIO $ Topics.upsert newTopic
   return newTopic
 
 createTopicHandler :: Topic -> Handler Topic
-createTopicHandler = undefined
+createTopicHandler topic = do
+  id <- liftIO Topics.generateId
+  let newTopic = topic { getTopicId = id }
+  liftIO $ Topics.insert newTopic
+  return newTopic
+

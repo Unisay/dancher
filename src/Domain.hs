@@ -3,7 +3,6 @@
 module Domain where
 
 import Lib.Prelude
-import Data.Time (UTCTime)
 import Data.Aeson
 import Data.Aeson.Types
 
@@ -13,7 +12,6 @@ data Topic = Topic
   { getTopicId :: TopicId
   , getTopicTitle :: Text
   , getTopicDescription :: Text
-  , getTopicCreated :: UTCTime
   } deriving (Show, Generic)
 
 instance Eq Topic where
