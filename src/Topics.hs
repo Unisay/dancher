@@ -2,21 +2,28 @@ module Topics where
 
 import Domain
 import Lib.Prelude hiding (all)
+import Control.Monad.Trans.Maybe
+import qualified Data.Map as M
 
-all :: [Topic]
-all =
-  [ Topic 1 "Topic title 1" "Topic description 1"
-  , Topic 2 "Topic title 2" "Topic description 2"
-  ]
+type TopicRepo = MVar (Map TopicId Topic)
 
-generateId :: IO TopicId
-generateId = return 3 -- TODO
+newTopicRepo :: IO TopicRepo
+newTopicRepo = newMVar $ M.fromList [ (1, Topic 1 "Topic title 1" "Topic description 1")
+                                    , (2, Topic 2 "Topic title 2" "Topic description 2")
+                                    ]
 
-lookup :: TopicId -> Maybe Topic
-lookup id = find ((== id) . getTopicId) all
+generateId :: TopicRepo -> IO TopicId
+generateId _ = return 3 -- TODO
 
-upsert :: Topic -> IO ()
-upsert _ = return () -- TODO
+lookup :: TopicRepo -> TopicId -> MaybeT IO Topic
+lookup repo id = MaybeT $ do
+  m <- readMVar repo
+  return $ M.lookup id m
 
-insert :: Topic -> IO () -- TODO: error on duplicate id?
-insert _ = return () -- TODO
+upsert :: TopicRepo -> Topic -> IO ()
+upsert repo topic = do
+  m <- takeMVar repo
+  putMVar repo $! M.insert (getTopicId topic) topic m
+
+insert :: TopicRepo -> Topic -> IO () -- TODO: error on duplicate id?
+insert = upsert

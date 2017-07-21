@@ -10,6 +10,8 @@ import Api (TopicApi)
 import Domain
 import qualified Topics
 
+type Server
+
 server :: Server TopicApi
 server =
   return Topics.all           -- GET  /topics

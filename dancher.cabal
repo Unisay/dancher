@@ -19,21 +19,25 @@ library
   exposed-modules:     Lib
                      , Server
   other-modules:       Lib.Prelude
+                     , Api
+                     , Domain
+                     , Topics
   build-depends:       base >= 4.7 && < 5
                      , protolude >= 0.1.6 && < 0.2
                      , text
                      , time
                      , servant-server
+                     , transformers
                      , mtl
                      , attoparsec
                      , bytestring
                      , aeson
                      , wai
-                     , warp
                      , lucid
                      , directory
                      , blaze-html
                      , blaze-markup
+                     , containers
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings, NoImplicitPrelude
 
@@ -44,6 +48,7 @@ executable dancher-exe
   build-depends:       base
                      , dancher
                      , protolude >= 0.1.6 && < 0.2
+                     , warp
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings, NoImplicitPrelude
 
