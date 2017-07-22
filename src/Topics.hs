@@ -5,25 +5,30 @@ import Lib.Prelude hiding (all)
 import Control.Monad.Trans.Maybe
 import qualified Data.Map as M
 
-type TopicRepo = MVar (Map TopicId Topic)
+type Repo = MVar (Map TopicId Topic)
 
-newTopicRepo :: IO TopicRepo
+newTopicRepo :: IO Repo
 newTopicRepo = newMVar $ M.fromList [ (1, Topic 1 "Topic title 1" "Topic description 1")
                                     , (2, Topic 2 "Topic title 2" "Topic description 2")
                                     ]
 
-generateId :: TopicRepo -> IO TopicId
+generateId :: Repo -> IO TopicId
 generateId _ = return 3 -- TODO
 
-lookup :: TopicRepo -> TopicId -> MaybeT IO Topic
+all :: Repo -> IO [Topic]
+all repo = do
+  m <- readMVar repo
+  return $ M.elems m
+
+lookup :: Repo -> TopicId -> MaybeT IO Topic
 lookup repo id = MaybeT $ do
   m <- readMVar repo
   return $ M.lookup id m
 
-upsert :: TopicRepo -> Topic -> IO ()
+upsert :: Repo -> Topic -> IO ()
 upsert repo topic = do
   m <- takeMVar repo
   putMVar repo $! M.insert (getTopicId topic) topic m
 
-insert :: TopicRepo -> Topic -> IO () -- TODO: error on duplicate id?
+insert :: Repo -> Topic -> IO () -- TODO: error on duplicate id?
 insert = upsert
