@@ -5,8 +5,7 @@ import Network.Wai
 import Network.Wai.Handler.Warp (run)
 import Servant (serve)
 import Server
-import Topics
-import Api
+import Topic
 
 main :: IO ()
 main = do
@@ -16,6 +15,3 @@ main = do
 
 application :: Env -> Application
 application env = serve topicApi (server env)
-  where
-    topicApi :: Proxy TopicApi
-    topicApi = Proxy

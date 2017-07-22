@@ -1,10 +1,10 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Api where
+module Topic.Api (TopicApi, topicApi) where
 
-import Domain
 import Servant
+import Topic.Domain
 
 type GetTopics =
   "topics" :> Get '[JSON] [Topic]
@@ -28,3 +28,6 @@ type TopicApi =
   :<|> GetTopic
   :<|> CreateTopic
   :<|> UpsertTopic
+
+topicApi :: Proxy TopicApi
+topicApi = Proxy

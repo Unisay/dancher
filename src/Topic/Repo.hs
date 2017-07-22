@@ -1,6 +1,6 @@
-module Topics where
+module Topic.Repo where
 
-import Domain
+import Topic.Domain
 import Lib.Prelude hiding (all)
 import Control.Monad.Trans.Maybe
 import qualified Data.Map as M
@@ -13,7 +13,10 @@ newTopicRepo = newMVar $ M.fromList [ (1, Topic 1 "Topic title 1" "Topic descrip
                                     ]
 
 generateId :: Repo -> IO TopicId
-generateId _ = return 3 -- TODO
+generateId repo = do
+  m <- readMVar repo
+  let sorted = sortBy (flip compare) (M.keys m)
+  return $ fromMaybe 1 ((+1) <$> head sorted)
 
 all :: Repo -> IO [Topic]
 all repo = do

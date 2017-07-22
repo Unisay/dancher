@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Domain where
+module Topic.Domain where
 
 import Lib.Prelude
 import Data.Aeson
