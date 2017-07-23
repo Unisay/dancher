@@ -1,3 +1,5 @@
+{-# LANGUAGE DataKinds #-}
+
 module Topic.Controller (server) where
 
 import Server
@@ -5,6 +7,7 @@ import Servant
 import Lib.Prelude
 import Topic.Api
 import Topic.Domain
+import Data.Aeson.WithField
 import qualified Topic.Repo as Repo
 import Control.Monad.Trans.Maybe
 
@@ -17,28 +20,30 @@ serverT = allTopics    -- GET  /topics
   :<|> createTopic     -- POST /topics
   :<|> upsertTopic     -- PUT  /topics/:topic-id
 
-allTopics :: AppM [Topic]
-allTopics = do
-  env <- ask
-  liftIO $ Repo.all (getTopicsRepo env)
+identify :: TopicId -> Topic -> WithField "id" TopicId Topic
+identify = WithField
 
-lookupTopic :: TopicId -> AppM Topic
+allTopics :: AppM [WithId TopicId Topic]
+allTopics = do
+  repo <- getTopicsRepo <$> ask
+  topics <- liftIO $ Repo.all repo
+  return $ map (uncurry identify) topics
+
+lookupTopic :: TopicId -> AppM (WithId TopicId Topic)
 lookupTopic topicId = do
-  env <- ask
-  let maybeTopic = Repo.lookup (getTopicsRepo env) topicId
+  repo <- getTopicsRepo <$> ask
+  let maybeTopic = identify topicId <$> Repo.lookup repo topicId
   lift $ maybeToExceptT err404 maybeTopic
 
-upsertTopic :: TopicId -> Topic -> AppM Topic
-upsertTopic id topic = do
-  env <- ask
-  let newTopic = topic { getTopicId = id }
-  liftIO $ Repo.upsert (getTopicsRepo env) newTopic
-  return newTopic
+upsertTopic :: TopicId -> Topic -> AppM (WithId TopicId Topic)
+upsertTopic id newTopic = do
+  repo <- getTopicsRepo <$> ask
+  liftIO $ Repo.upsert repo id newTopic
+  return $ identify id newTopic
 
-createTopic :: Topic -> AppM Topic
-createTopic topic = do
-  env <- ask
-  id <- liftIO $ Repo.generateId (getTopicsRepo env)
-  let newTopic = topic { getTopicId = id }
-  liftIO $ Repo.insert (getTopicsRepo env) newTopic
-  return newTopic
+createTopic :: Topic -> AppM (WithId TopicId Topic)
+createTopic newTopic = do
+  repo <- getTopicsRepo <$> ask
+  id <- liftIO $ Repo.generateId repo
+  liftIO $ Repo.insert repo id newTopic
+  return $ identify id newTopic

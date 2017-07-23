@@ -9,13 +9,9 @@ import Data.Aeson.Types
 type TopicId = Int
 
 data Topic = Topic
-  { getTopicId :: TopicId
-  , getTopicTitle :: Text
+  { getTopicTitle :: Text
   , getTopicDescription :: Text
-  } deriving (Show, Generic)
-
-instance Eq Topic where
-  (==) t1 t2 = getTopicId t1 == getTopicId t2
+  } deriving (Eq, Show, Generic)
 
 topicJsonOpts :: Options
 topicJsonOpts = defaultOptions {

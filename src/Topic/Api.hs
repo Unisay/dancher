@@ -5,23 +5,24 @@ module Topic.Api (TopicApi, topicApi) where
 
 import Servant
 import Topic.Domain
+import Data.Aeson.WithField
 
 type GetTopics =
-  "topics" :> Get '[JSON] [Topic]
+  "topics" :> Get '[JSON] [WithId TopicId Topic]
 
 type CreateTopic =
   "topics"
   :> ReqBody '[JSON] Topic
-  :> Post '[JSON] Topic
+  :> Post '[JSON] (WithId TopicId Topic)
 
 type GetTopic =
   "topics" :> Capture "topic-id" TopicId
-   :> Get '[JSON] Topic
+   :> Get '[JSON] (WithId TopicId Topic)
 
 type UpsertTopic =
   "topics" :> Capture "topic-id" TopicId
    :> ReqBody '[JSON] Topic
-   :> Put '[JSON] Topic
+   :> Put '[JSON] (WithId TopicId Topic)
 
 type TopicApi =
   GetTopics
