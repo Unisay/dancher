@@ -33,5 +33,8 @@ upsert repo id topic = do
   m <- takeMVar repo
   putMVar repo $! M.insert id topic m
 
-insert :: Repo -> TopicId -> Topic -> IO () -- TODO: error on duplicate id?
-insert = upsert
+insert :: Repo -> TopicId -> Topic -> MaybeT IO ()
+insert repo id topic = MaybeT $ modifyMVar repo $ \m ->
+  if M.member id m
+  then return (m, Nothing)
+  else return (M.insert id topic m, Just ())

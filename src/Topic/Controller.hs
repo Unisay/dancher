@@ -12,9 +12,9 @@ import qualified Topic.Repo as Repo
 import Control.Monad.Trans.Maybe
 
 server :: Env -> Server TopicApi
-server env = enter (appMtoHandler env) serverT
+server env = enter (responseToHandler env) serverT
 
-serverT :: ServerT TopicApi AppM
+serverT :: ServerT TopicApi Response
 serverT = allTopics    -- GET  /topics
   :<|> lookupTopic     -- GET  /topics/:topic-id
   :<|> createTopic     -- POST /topics
@@ -23,27 +23,30 @@ serverT = allTopics    -- GET  /topics
 identify :: TopicId -> Topic -> WithField "id" TopicId Topic
 identify = WithField
 
-allTopics :: AppM [WithId TopicId Topic]
+allTopics :: Response [TopicEntity]
 allTopics = do
   repo <- getTopicsRepo <$> ask
   topics <- liftIO $ Repo.all repo
   return $ map (uncurry identify) topics
 
-lookupTopic :: TopicId -> AppM (WithId TopicId Topic)
+lookupTopic :: TopicId -> Response TopicEntity
 lookupTopic topicId = do
   repo <- getTopicsRepo <$> ask
   let maybeTopic = identify topicId <$> Repo.lookup repo topicId
   lift $ maybeToExceptT err404 maybeTopic
 
-upsertTopic :: TopicId -> Topic -> AppM (WithId TopicId Topic)
+upsertTopic :: TopicId -> Topic -> Response TopicEntity
 upsertTopic id newTopic = do
   repo <- getTopicsRepo <$> ask
   liftIO $ Repo.upsert repo id newTopic
   return $ identify id newTopic
 
-createTopic :: Topic -> AppM (WithId TopicId Topic)
+createTopic :: Topic -> Response TopicEntity
 createTopic newTopic = do
   repo <- getTopicsRepo <$> ask
-  id <- liftIO $ Repo.generateId repo
-  liftIO $ Repo.insert repo id newTopic
-  return $ identify id newTopic
+  liftIO $ do
+    id <- Repo.generateId repo
+    inserted <- runMaybeT (Repo.insert repo id newTopic)
+    let ret = return (identify id newTopic)
+    maybe (throwIO err500) (const ret) inserted
+

@@ -7,9 +7,9 @@ import Lib.Prelude hiding (ask)
 import Servant
 import qualified Topic.Repo as TR
 
-type AppM = ReaderT Env Handler
+type Response = ReaderT Env Handler
 
 newtype Env = Env { getTopicsRepo :: TR.Repo }
 
-appMtoHandler :: Env -> AppM :~> Handler
-appMtoHandler env = Nat $ \rt -> runReaderT rt env
+responseToHandler :: Env -> Response :~> Handler
+responseToHandler env = Nat $ \rt -> runReaderT rt env
