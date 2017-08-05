@@ -15,13 +15,16 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
+                     , src/Topic
   ghc-options:         -Wall
-  exposed-modules:     Lib
-                     , Server
-  other-modules:       Lib.Prelude
-                     , Api
-                     , Domain
-                     , Topics
+  exposed-modules:     Server
+                     , Topic
+                     , Lib.Prelude
+  other-modules:       Topic.Api
+                     , Topic.Repo
+                     , Topic.Domain
+                     , Topic.Controller
+
   build-depends:       base >= 4.7 && < 5
                      , protolude >= 0.1.6 && < 0.2
                      , text
@@ -50,6 +53,8 @@ executable dancher-exe
                      , dancher
                      , protolude >= 0.1.6 && < 0.2
                      , warp
+                     , wai
+                     , servant-server
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings, NoImplicitPrelude
 
