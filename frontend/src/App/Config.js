@@ -1,6 +1,4 @@
 exports.config = {
-  title: 'Pux Starter App',
-  public_path: process.env.NODE_ENV === 'production'
-               ? '/dist/'
-               : 'http://localhost:8080/dist/'
+  title: 'Dancher frontend',
+  public_path: process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:8080/'
 }
