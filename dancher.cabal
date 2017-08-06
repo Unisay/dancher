@@ -21,10 +21,9 @@ library
                      , Topic
                      , Lib.Prelude
   other-modules:       Topic.Api
-                     , Topic.Repo
                      , Topic.Domain
+                     , Topic.Repo
                      , Topic.Controller
-
   build-depends:       base >= 4.7 && < 5
                      , protolude >= 0.1.6 && < 0.2
                      , text
