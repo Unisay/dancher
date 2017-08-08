@@ -2,8 +2,8 @@ module App.State where
 
 import App.Config (config)
 import App.Routes (Route, match)
+import App.Types (Topic)
 import Data.Newtype (class Newtype)
-import Types (Topic)
 
 newtype State = State
   { title :: String
