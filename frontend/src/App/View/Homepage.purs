@@ -1,16 +1,19 @@
-module App.View.Homepage where
+module App.View.Homepage (view) where
 
 import App.Events (Event)
-import App.State (State)
+import App.State (State(..))
+import App.View.TopicList as TopicList
+import CSS (fromString, pct, width, (?))
+import Data.Function ((#), ($))
+import Data.Monoid (mempty)
+import Pux.DOM.HTML (HTML, style)
+import Text.Smolder.HTML (div)
+import Text.Smolder.HTML.Attributes (className)
+import Text.Smolder.Markup ((!))
 import Control.Bind (discard)
-import Data.Function (($))
-import Pux.DOM.HTML (HTML)
-import Text.Smolder.HTML (a, div, h1)
-import Text.Smolder.HTML.Attributes (href, className)
-import Text.Smolder.Markup ((!), text)
+
 
 view :: State -> HTML Event
-view s =
-  div do
-    h1 $ text "Dancher"
-    a ! className "github" ! href "https://github.com/unisay/dancher/" $ text "GitHub"
+view (State { topics : []}) = do
+  div ! className "full-width mdl-progress mdl-js-progress mdl-progress__indeterminate" $ mempty
+view s = TopicList.view s

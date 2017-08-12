@@ -8,7 +8,7 @@
     "postinstall": "bower cache clean && bower install",
     "clean": "rimraf static/dist",
     "build": "npm run clean && webpack --config ./webpack.config.js --progress --profile --colors",
-    "watch": "npm run clean && webpack-dev-server --content-base static/ --hot --inline --config webpack.config.js",
+    "watch": "npm run clean && webpack-dev-server --content-base static/ --content-base bower_components/material-design-lite/ --hot --inline --config webpack.config.js",
     "serve": "npm run build && serve static",
     "start": "npm run watch",
     "test": "echo \"Error: no test specified\" && exit 1"

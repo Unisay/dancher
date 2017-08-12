@@ -8,8 +8,12 @@ import qualified Data.Map as M
 type Repo = MVar (Map TopicId Topic)
 
 newTopicRepo :: IO Repo
-newTopicRepo = newMVar $ M.fromList [ (1, Topic "Topic title 1" "Topic description 1")
-                                    , (2, Topic "Topic title 2" "Topic description 2")
+newTopicRepo = newMVar $ M.fromList [ (1, Topic
+                                            "Принятие подарков"
+                                            "Topic description 1")
+                                    , (2, Topic
+                                            "Артисты и их политические взгляды"
+                                            "Вам нравится творчество какого-нибудь музыканта или киноартиста, но его политические взгляды или личные позиции по иным, принципиальным для вас вопросам противоречат вашим. Вопрос: будете ли вы наслаждаться творчеством этого человека, если оно непосредственно не затрагивает принципиальные различия?")
                                     ]
 
 generateId :: Repo -> IO TopicId
