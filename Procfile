@@ -1,1 +1,1 @@
-web: dancher-exe
+web: stack exec dancher-exe -- -p $PORT
