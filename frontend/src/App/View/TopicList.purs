@@ -3,7 +3,7 @@ module App.View.TopicList where
 import App.Events (Event)
 import App.State (State(..))
 import App.Types (Topic(..))
-import CSS (Size(Size), backgroundColor, em, fromString, margin, minHeight, nil, rgb, width, (?))
+import CSS (Size(Size), backgroundColor, em, fromString, margin, minHeight, nil, whitesmoke, width, (?))
 import CSS.Common (auto)
 import Data.Foldable (for_)
 import Data.Maybe (fromMaybe)
@@ -19,7 +19,7 @@ view (State st) = div do
     style do
       fromString ".topic-card" ? do
         margin (0.5 #em) nil nil (0.5 #em)
-        backgroundColor (rgb 255 235 100)
+        backgroundColor whitesmoke
         width (Size $ fromString "calc(100% - 1.1em)")
         minHeight auto
     for_ st.topics \(Topic topic) -> div ! className "topic-card mdl-card mdl-shadow--4dp mdl-card--border" $ do
