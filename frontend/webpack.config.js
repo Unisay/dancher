@@ -1,7 +1,7 @@
 const appConfig = require('./src/App/Config.js').config;
 const path = require('path');
 const webpack = require('webpack');
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV !== 'dev';
 
 const entries = [path.join(__dirname, 'support/entry.js')];
 
@@ -10,7 +10,9 @@ const plugins = [
 ];
 
 if (isProd) {
-  plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true, debug: false }))
+  plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true, debug: false }));
+  const BabiliPlugin = require("babili-webpack-plugin");
+  plugins.push(new BabiliPlugin);
 }
 
 module.exports = {
@@ -54,11 +56,12 @@ module.exports = {
     version: false,
     assets: false,
     errors: true,
-    colors: false,
+    colors: true,
     chunks: false,
     children: false,
     cached: false,
     modules: false,
-    chunkModules: false
+    chunkModules: false,
+    devtools: true
   }
 };

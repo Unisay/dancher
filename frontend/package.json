@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Frontend for the Dancher",
   "main": "support/index.js",
-  "keywords": [ "dancher" ],
+  "keywords": [
+    "dancher"
+  ],
   "scripts": {
     "postinstall": "bower cache clean && bower install",
     "clean": "rimraf static/dist",
@@ -26,6 +28,7 @@
     "node": "^6.0.0"
   },
   "dependencies": {
+    "babili-webpack-plugin": "^0.1.2",
     "bower": "^1.7.9",
     "preact": "^8.1.0",
     "preact-compat": "^3.16.0",
