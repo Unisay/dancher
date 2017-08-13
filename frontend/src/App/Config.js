@@ -6,4 +6,4 @@ exports.config = {
   title: 'Dancher frontend',
   public_path: public_path,
   api_path: public_path + "api/"
-}
+};

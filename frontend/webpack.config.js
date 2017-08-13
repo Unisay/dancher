@@ -20,7 +20,7 @@ module.exports = {
   context: __dirname,
   target: 'web',
   output: {
-    path: path.join(__dirname, 'static', 'dist'),
+    path: path.join(__dirname, 'static'),
     filename: 'bundle.js',
     publicPath: appConfig.public_path
   },
@@ -32,7 +32,7 @@ module.exports = {
         exclude: /node_modules/,
         query: isProd ? {
           bundle: true,
-          bundleOutput: 'static/dist/bundle.js'
+          bundleOutput: 'static/bundle.js'
         } : {
           psc: 'psa',
           pscIde: true
