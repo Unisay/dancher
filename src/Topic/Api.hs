@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Topic.Api (TopicApi, TopicEntity, topicApi) where
+module Topic.Api (TopicApi, TopicEntity) where
 
 import Servant
 import Topic.Domain
@@ -31,6 +31,3 @@ type TopicApi =
   :<|> GetTopic
   :<|> CreateTopic
   :<|> UpsertTopic
-
-topicApi :: Proxy TopicApi
-topicApi = Proxy

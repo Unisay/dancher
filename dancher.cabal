@@ -18,7 +18,9 @@ library
                      , src/Topic
   ghc-options:         -Wall
   exposed-modules:     Server
+                     , Response
                      , Topic
+                     , Static
                      , Lib.Prelude
   other-modules:       Topic.Api
                      , Topic.Domain
@@ -28,7 +30,7 @@ library
                      , protolude >= 0.1.6 && < 0.2
                      , text
                      , time
-                     , servant-server
+                     , servant-server >= 0.11
                      , transformers
                      , mtl
                      , attoparsec

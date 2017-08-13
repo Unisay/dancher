@@ -38,7 +38,7 @@ css :: CSS
 css = do
   fromString ".full-width" ? width (100.0 #pct)
   fromString ".mdl-layout" ? do
-    backgroundImage $ url "/back/sayagata.png"
+    backgroundImage $ url "/img/sayagata.png"
     backgroundRepeat repeat
   fromString ".logo" ? do
     fontFamily ["Chewy"] (singleton (GenericFontFamily $ fromString "cursive"))

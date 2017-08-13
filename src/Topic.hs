@@ -1,10 +1,9 @@
 module Topic
   ( TopicApi
-  , topicApi
-  , server
+  , topicServer
   , newTopicRepo
   ) where
 
 import Topic.Api
-import Topic.Controller (server)
+import Topic.Controller (topicServer)
 import Topic.Repo (newTopicRepo)

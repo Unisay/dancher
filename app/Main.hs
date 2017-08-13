@@ -7,8 +7,9 @@ import Network.Wai.Middleware.Cors
 import Options.Applicative
 import Data.Semigroup ((<>))
 import Servant (serve)
-import Server
-import Topic
+import Response
+import Server (api, server)
+import Topic (newTopicRepo)
 
 newtype Opts = Opts  { port :: Int }
 
@@ -24,7 +25,7 @@ options = Opts <$> option auto (  long "port"
 main :: IO ()
 main = execParser opts >>= withOpts
   where
-    opts = info (options <**> helper)
+    opts = info ( options <**> helper )
                 ( fullDesc
                <> progDesc "Dancher REST backend"
                <> header "Dancher REST backend server" )
@@ -36,7 +37,7 @@ withOpts (Opts tcpPort) = do
   run tcpPort $ serverCors $ application (Env repo)
 
 application :: Env -> Application
-application env = serve topicApi (server env)
+application env = serve api (server env)
 
 serverCors :: Middleware
 serverCors = cors $ const (Just serverCorsPolicy)

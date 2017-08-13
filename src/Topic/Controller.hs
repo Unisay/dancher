@@ -1,24 +1,24 @@
 {-# LANGUAGE DataKinds #-}
 
-module Topic.Controller (server) where
+module Topic.Controller (topicServer) where
 
-import Server
 import Servant
 import Lib.Prelude
-import Topic.Api
-import Topic.Domain
 import Data.Aeson.WithField
 import qualified Topic.Repo as Repo
 import Control.Monad.Trans.Maybe
+import Topic.Api
+import Topic.Domain
+import Response (Response, Env, responseToHandler, getTopicsRepo)
 
-server :: Env -> Server TopicApi
-server env = enter (responseToHandler env) serverT
+topicServer :: Env -> Server TopicApi
+topicServer env = enter (responseToHandler env) serverT
 
 serverT :: ServerT TopicApi Response
-serverT = allTopics    -- GET  /topics
-  :<|> lookupTopic     -- GET  /topics/:topic-id
-  :<|> createTopic     -- POST /topics
-  :<|> upsertTopic     -- PUT  /topics/:topic-id
+serverT = allTopics       -- GET  /topics
+     :<|> lookupTopic     -- GET  /topics/:topic-id
+     :<|> createTopic     -- POST /topics
+     :<|> upsertTopic     -- PUT  /topics/:topic-id
 
 identify :: TopicId -> Topic -> WithField "id" TopicId Topic
 identify = WithField
@@ -33,7 +33,7 @@ lookupTopic :: TopicId -> Response TopicEntity
 lookupTopic topicId = do
   repo <- getTopicsRepo <$> ask
   let maybeTopic = identify topicId <$> Repo.lookup repo topicId
-  lift $ maybeToExceptT err404 maybeTopic
+  lift $ Handler $ maybeToExceptT err404 maybeTopic
 
 upsertTopic :: TopicId -> Topic -> Response TopicEntity
 upsertTopic id newTopic = do
