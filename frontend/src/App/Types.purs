@@ -8,7 +8,7 @@ import Data.Argonaut.Decode ((.??))
 import Data.Argonaut.Encode.Generic (gEncodeJson)
 import Data.Bifunctor (lmap)
 import Data.Foreign (F, ForeignError(..))
-import Data.Generic (class Generic, gShow)
+import Data.Generic (class Generic, gEq, gShow)
 import Data.Maybe (Maybe(..))
 import Data.MediaType.Common (applicationJSON)
 import Data.Tuple (Tuple(..))
@@ -32,8 +32,9 @@ derive instance genericTopic :: Generic Topic
 
 derive instance genericTopics :: Generic Topics
 
-instance showTopic :: Show Topic where
-  show = gShow
+instance eqTopic :: Eq Topic where eq = gEq
+  
+instance showTopic :: Show Topic where show = gShow
 
 instance decodeJsonTopic :: DecodeJson Topic where
   decodeJson json = do
