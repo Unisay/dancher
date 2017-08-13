@@ -1,25 +1,29 @@
 module App.Types where
 
 import Prelude
-import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
-import Unsafe.Coerce (unsafeCoerce)
-import Data.Generic (class Generic, gShow)
+
+import Control.Monad.Except (ExceptT(..))
 import Data.Argonaut (class DecodeJson, class EncodeJson, Json, decodeJson, (.?))
+import Data.Argonaut.Decode ((.??))
 import Data.Argonaut.Encode.Generic (gEncodeJson)
+import Data.Bifunctor (lmap)
+import Data.Foreign (F, ForeignError(..))
+import Data.Generic (class Generic, gShow)
+import Data.Maybe (Maybe(..))
+import Data.MediaType.Common (applicationJSON)
+import Data.Tuple (Tuple(..))
 import Network.HTTP.Affjax.Request (class Requestable)
 import Network.HTTP.Affjax.Response (class Respondable, ResponseType(..), fromResponse)
-import Data.MediaType.Common (applicationJSON)
-import Data.Foreign (F, ForeignError(..))
-import Data.Bifunctor (lmap)
-import Control.Monad.Except (ExceptT(..))
+import Unsafe.Coerce (unsafeCoerce)
 
 type TopicId = Int
 
 newtype Topic = Topic
   { id :: TopicId
   , title :: String
-  , description :: String
+  , description :: Maybe String
+  , situation :: String
+  , questions :: Array String
   }
 
 newtype Topics = Topics (Array Topic)
@@ -36,8 +40,10 @@ instance decodeJsonTopic :: DecodeJson Topic where
     obj <- decodeJson json
     id <- obj .? "id"
     title <- obj .? "title"
-    description <- obj .? "description"
-    pure $ Topic { id, title, description }
+    description <- obj .?? "description"
+    situation <- obj .? "situation"
+    questions <- obj .? "questions"
+    pure $ Topic { id, title, description, situation, questions }
 
 instance decodeJsonTopics :: DecodeJson Topics where
   decodeJson json = Topics <$> decodeJson json

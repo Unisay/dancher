@@ -10,15 +10,16 @@ type TopicId = Int
 
 data Topic = Topic
   { getTopicTitle :: Text
-  , getTopicDescription :: Text
+  , getTopicDescription :: Maybe Text
+  , getTopicSituation :: Text
+  , getTopicQuestions :: [Text]
   } deriving (Eq, Show, Generic)
 
 topicJsonOpts :: Options
-topicJsonOpts = defaultOptions {
-    fieldLabelModifier = camelCase . stripPrefix
-  } where
-  camelCase = camelTo2 '_'
-  stripPrefix = drop 8
+topicJsonOpts = defaultOptions { fieldLabelModifier = camelCase . stripPrefix
+                               , omitNothingFields = True
+                               } where camelCase = camelTo2 '_'
+                                       stripPrefix = drop 8
 
 instance ToJSON Topic where
   toJSON = genericToJSON topicJsonOpts
