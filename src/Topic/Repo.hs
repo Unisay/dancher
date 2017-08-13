@@ -42,3 +42,8 @@ insert repo id topic = MaybeT $ modifyMVar repo $ \m ->
   if M.member id m
   then return (m, Nothing)
   else return (M.insert id topic m, Just ())
+
+delete :: Repo -> TopicId -> IO Bool
+delete repo id = modifyMVar repo f
+  where f m = let res = M.member id m
+              in return (M.delete id m, res)

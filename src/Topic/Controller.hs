@@ -15,10 +15,11 @@ topicServer :: Env -> Server TopicApi
 topicServer env = enter (responseToHandler env) serverT
 
 serverT :: ServerT TopicApi Response
-serverT = allTopics       -- GET  /topics
-     :<|> lookupTopic     -- GET  /topics/:topic-id
-     :<|> createTopic     -- POST /topics
-     :<|> upsertTopic     -- PUT  /topics/:topic-id
+serverT = allTopics       -- GET    /topics
+     :<|> lookupTopic     -- GET    /topics/:topic-id
+     :<|> createTopic     -- POST   /topics
+     :<|> deleteTopic     -- DELETE /topics/:topic-id
+     :<|> upsertTopic     -- PUT    /topics/:topic-id
 
 identify :: TopicId -> Topic -> WithField "id" TopicId Topic
 identify = WithField
@@ -50,3 +51,10 @@ createTopic newTopic = do
     let ret = return (identify id newTopic)
     maybe (throwIO err500) (const ret) inserted
 
+deleteTopic :: TopicId -> Response NoContent
+deleteTopic id = do
+  repo <- getTopicsRepo <$> ask
+  deleted <- liftIO $ Repo.delete repo id
+  if deleted
+    then return NoContent
+    else lift (throwError err404)

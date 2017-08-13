@@ -17,6 +17,10 @@ type CreateTopic =
   :> ReqBody '[JSON] Topic
   :> Post '[JSON] TopicEntity
 
+type DeleteTopic =
+  "topics" :> Capture "topic-id" TopicId
+  :> DeleteNoContent '[JSON] NoContent
+
 type GetTopic =
   "topics" :> Capture "topic-id" TopicId
    :> Get '[JSON] TopicEntity
@@ -30,4 +34,5 @@ type TopicApi =
   GetTopics
   :<|> GetTopic
   :<|> CreateTopic
+  :<|> DeleteTopic
   :<|> UpsertTopic
