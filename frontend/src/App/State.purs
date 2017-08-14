@@ -5,14 +5,16 @@ import App.Routes (Route, match)
 import App.Types (Topic)
 import Control.Plus (empty)
 import Data.List (List)
+import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
 
 newtype State = State
   { title :: String
   , route :: Route
   , loaded :: Boolean
-  , topics :: Array Topic
-  , closed :: List Topic
+  , topics :: List Topic
+  , expanded :: Maybe Topic
+  , archived :: List Topic
   }
 
 derive instance newtypeState :: Newtype State _
@@ -23,5 +25,6 @@ init url = State
   , route: match url
   , loaded: false
   , topics: empty
-  , closed: empty
+  , expanded: empty
+  , archived: empty
   }

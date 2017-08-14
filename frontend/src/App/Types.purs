@@ -12,6 +12,7 @@ import Data.Generic (class Generic, gEq, gShow)
 import Data.Maybe (Maybe(..))
 import Data.MediaType.Common (applicationJSON)
 import Data.Tuple (Tuple(..))
+import Data.List (List)
 import Network.HTTP.Affjax.Request (class Requestable)
 import Network.HTTP.Affjax.Response (class Respondable, ResponseType(..), fromResponse)
 import Unsafe.Coerce (unsafeCoerce)
@@ -23,17 +24,17 @@ newtype Topic = Topic
   , title :: String
   , description :: Maybe String
   , situation :: String
-  , questions :: Array String
+  , questions :: List String
   }
 
-newtype Topics = Topics (Array Topic)
+newtype Topics = Topics (List Topic)
 
 derive instance genericTopic :: Generic Topic
 
 derive instance genericTopics :: Generic Topics
 
 instance eqTopic :: Eq Topic where eq = gEq
-  
+
 instance showTopic :: Show Topic where show = gShow
 
 instance decodeJsonTopic :: DecodeJson Topic where

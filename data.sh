@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-ADD="http POST http://dancher.herokuapp.com/api/topics"
+URL=${1:-"http://dancher.herokuapp.com/api"}
+ADD="http POST $URL/topics"
+
 
 # альтернативные ситуации (например с точки зрения мужчины/женщины)
 
