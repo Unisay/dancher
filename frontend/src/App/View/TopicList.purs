@@ -3,64 +3,67 @@ module App.View.TopicList where
 import App.Events (Event(..))
 import App.State (State(..))
 import App.Types (Topic(..))
-import CSS (fromString, paddingLeft, paddingRight, rem, (?))
+import CSS (fromString, margin, marginTop, padding, paddingBottom, paddingLeft, paddingRight, rem, (**), (?))
 import CSS.Stylesheet (CSS)
 import Data.Foldable (for_)
 import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Monoid (mempty)
+import Prelude hiding (id,div)
 import Pux.DOM.Events (DOMEvent, onClick)
 import Pux.DOM.HTML (HTML, style)
-import Text.Smolder.HTML (a, article, div, h2, h6, i, li, nav, ol, p, span)
-import Text.Smolder.HTML.Attributes (className)
+import Text.Smolder.HTML (a, article, div, figure, h2, h4, i, nav, p, span)
+import Text.Smolder.HTML.Attributes (className, id)
 import Text.Smolder.Markup (Markup, text, (!), (#!))
-import Prelude hiding (div)
 
 type Part = Markup (DOMEvent -> Event)
 
 view :: State -> HTML Event
 view (State { expanded: Just topic }) =
-  expandedTopicCard topic
+  div ! className "topic-cards container" $ expandedTopicCard topic
 
 view (State st) =
-  div ! className "topic-cards" $
-    for_ st.topics shrankTopicCard
+  div ! className "topic-cards container" $ for_ st.topics shrankTopicCard
 
 shrankTopicCard :: Topic -> Part
 shrankTopicCard topic@(Topic { title: title, description: description }) =
   let header = topicHeader title (ArchiveTopic topic)
       body = text $ fromMaybe "No description" description
-      footer = cardButton (ExpandTopic topic) "Обсудить"
-  in card header body footer
+      primaryAction = cardButton (ExpandTopic topic) "Обсудить"
+      secondaryAction = a ! className "button is-small" #! onClick (const (ArchiveTopic topic)) $ text "В архив"
+  in card header body primaryAction secondaryAction
 
 expandedTopicCard :: Topic -> Part
 expandedTopicCard topic@(Topic { title: title, situation: situation, questions: questions }) =
   let header = topicHeader title (ShrinkTopic topic)
       body = do
-              h6 ! className "title" $ text "Ситуация:"
+              h4 ! id "situation" ! className "subtitle is-4" $ text "Ситуация"
               p $ text situation
-              h6 ! className "title" $ text "Вопросы:"
-              ol ! className "mdl-list" $ for_ questions \question -> do
-                li ! className "mdl-list__item" $ do
-                  span ! className "mdl-list__item-primary-content" $ do
-                    i ! className "material-icons mdl-list__item-avatar" $ text "help outline"
-                    text question
-      footer = nav ! className "level" $
-                div ! className "level-right" $
-                  div ! className "level-item" $
-                    cardButton (ShrinkTopic topic) "Закрыть"
-  in card header body footer
+              h4 ! id "questions" ! className "subtitle is-4" $ text "Вопросы"
+              for_ questions \question -> do
+                article ! className "media" $ do
+                  figure ! className "media-left" $
+                    span ! className "icon is-large" $ i ! className "fa fa-question-circle-o" $ mempty
+                  div ! className "media-content" $
+                    div ! className "content" $ text question
+      primaryAction = cardButton (ShrinkTopic topic) "Закрыть"
+      secondaryAction = a ! className "button is-small" #! onClick (const (ArchiveTopic topic)) $ text "В архив"
+  in card header body primaryAction secondaryAction
 
 topicHeader :: String -> Event -> Part
 topicHeader title event = a ! className "topic-title" #! onClick (const event) $ text title
 
-card :: Part -> Part -> Part -> Part
-card title body footer = do
+card :: Part -> Part -> Part -> Part -> Part
+card title body primaryAction secondaryAction = do
   style topicCardStyle
   div ! className "topic-card box" $
     article ! className "media" $
       div ! className "media-content" $ do
-        h2 title
-        p body
-        footer
+        div ! className "content" $ do
+          h2 title
+          body
+        nav ! className "level is-mobile" $ do
+          div ! className "level-left" $ div ! className "level-item" $ secondaryAction
+          div ! className "level-right" $ div ! className "level-item" $ primaryAction
 
 cardButton :: Event -> String -> Part
 cardButton ev caption =
@@ -69,5 +72,11 @@ cardButton ev caption =
 topicCardStyle :: CSS
 topicCardStyle = do
   fromString ".topic-cards" ? do
-    paddingLeft (0.75 #rem)
-    paddingRight (0.75 #rem)
+    paddingLeft (rem 0.75)
+    paddingRight (rem 0.75)
+  fromString ".topic-card" ? do
+    padding (rem 1.0) (rem 1.0) (rem 1.0) (rem 1.0)
+  fromString "#questions" ?
+    marginTop (rem 3.0)
+  (fromString ".content" ** fromString ".media-left") ?
+    margin (rem 0.5) (rem 0.5) (rem 0.5) (rem 0.5)

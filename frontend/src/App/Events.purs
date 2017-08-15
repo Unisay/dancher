@@ -37,4 +37,6 @@ foldp (ShrinkTopic topic) (State st) =
   noEffects $ State st { expanded = Nothing }
 
 foldp (ArchiveTopic topic) (State st) =
-  noEffects $ State st { topics = delete topic st.topics }
+  noEffects $ State st { topics = delete topic st.topics
+                       , expanded = Nothing
+                       }
