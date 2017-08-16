@@ -23,7 +23,9 @@ newtype Topic = Topic
   { id :: TopicId
   , title :: String
   , description :: Maybe String
-  , situation :: String
+  , subtitle :: String
+  , body :: String
+  , refs :: List String
   , questions :: List String
   }
 
@@ -43,9 +45,11 @@ instance decodeJsonTopic :: DecodeJson Topic where
     id <- obj .? "id"
     title <- obj .? "title"
     description <- obj .?? "description"
-    situation <- obj .? "situation"
+    subtitle <- obj .? "subtitle"
+    body <- obj .? "body"
+    refs <- obj .? "refs"
     questions <- obj .? "questions"
-    pure $ Topic { id, title, description, situation, questions }
+    pure $ Topic { id, title, description, subtitle, body, refs, questions }
 
 instance decodeJsonTopics :: DecodeJson Topics where
   decodeJson json = Topics <$> decodeJson json

@@ -26,6 +26,7 @@ view (State { topics : Nil }) =
 view s = do
   div ! className "tabs" $
     ul $ do
-      li ! className "is-active" $ a (text "Новые темы")
-      li $ a (text "Архив")
+      li ! className "is-active" $ a (text "Все темы")
+      li $ a (text "Избранные темы")
+      li $ a (text "Архив тем")
   TopicList.view s

@@ -3,7 +3,7 @@ module App.View.TopicList where
 import App.Events (Event(..))
 import App.State (State(..))
 import App.Types (Topic(..))
-import CSS (fromString, margin, marginTop, padding, paddingBottom, paddingLeft, paddingRight, rem, (**), (?))
+import CSS (fromString, margin, marginTop, padding, paddingLeft, paddingRight, rem, (**), (?))
 import CSS.Stylesheet (CSS)
 import Data.Foldable (for_)
 import Data.Maybe (Maybe(..), fromMaybe)
@@ -11,8 +11,8 @@ import Data.Monoid (mempty)
 import Prelude hiding (id,div)
 import Pux.DOM.Events (DOMEvent, onClick)
 import Pux.DOM.HTML (HTML, style)
-import Text.Smolder.HTML (a, article, div, figure, h2, h4, i, nav, p, span)
-import Text.Smolder.HTML.Attributes (className, id)
+import Text.Smolder.HTML (a, article, div, figure, h2, h4, i, nav, p, span, ol, li)
+import Text.Smolder.HTML.Attributes (className, href, id)
 import Text.Smolder.Markup (Markup, text, (!), (#!))
 
 type Part = Markup (DOMEvent -> Event)
@@ -26,20 +26,23 @@ view (State st) =
 
 shrankTopicCard :: Topic -> Part
 shrankTopicCard topic@(Topic { title: title, description: description }) =
-  let header = topicHeader title (ArchiveTopic topic)
+  let header = topicHeader title (ExpandTopic topic)
       body = text $ fromMaybe "No description" description
-      primaryAction = cardButton (ExpandTopic topic) "Обсудить"
+      primaryAction = cardButton (ExpandTopic topic) "Открыть"
       secondaryAction = a ! className "button is-small" #! onClick (const (ArchiveTopic topic)) $ text "В архив"
   in card header body primaryAction secondaryAction
 
 expandedTopicCard :: Topic -> Part
-expandedTopicCard topic@(Topic { title: title, situation: situation, questions: questions }) =
-  let header = topicHeader title (ShrinkTopic topic)
+expandedTopicCard topic@(Topic t) =
+  let header = topicHeader t.title (ShrinkTopic topic)
       body = do
-              h4 ! id "situation" ! className "subtitle is-4" $ text "Ситуация"
-              p $ text situation
+              h4 ! id "situation" ! className "subtitle is-4" $ text t.subtitle
+              p $ text t.body
+              h4 ! id "refs" $ text "Ссылки по теме"
+              ol $ for_ t.refs \reference ->
+                li ! className "reference" $ a ! href reference $ text reference
               h4 ! id "questions" ! className "subtitle is-4" $ text "Вопросы"
-              for_ questions \question -> do
+              for_ t.questions \question -> do
                 article ! className "media" $ do
                   figure ! className "media-left" $
                     span ! className "icon is-large" $ i ! className "fa fa-question-circle-o" $ mempty

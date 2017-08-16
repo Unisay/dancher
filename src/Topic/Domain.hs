@@ -11,8 +11,10 @@ type TopicId = Int
 data Topic = Topic
   { getTopicTitle :: Text
   , getTopicDescription :: Maybe Text
-  , getTopicSituation :: Text
+  , getTopicSubtitle :: Text
+  , getTopicBody :: Text
   , getTopicQuestions :: [Text]
+  , getTopicRefs :: [Text] -- todo: named references + lang
   } deriving (Eq, Show, Generic)
 
 topicJsonOpts :: Options
