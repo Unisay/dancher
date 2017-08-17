@@ -6,10 +6,9 @@ import Servant
 import Lib.Prelude
 import Data.Aeson.WithField
 import qualified Topic.Repo as Repo
-import Control.Monad.Trans.Maybe
 import Topic.Api
 import Topic.Domain
-import Response (Response, Env, responseToHandler, getTopicsRepo)
+import Response (Response, Env, responseToHandler, dbConnections)
 
 topicServer :: Env -> Server TopicApi
 topicServer env = enter (responseToHandler env) serverT
@@ -26,35 +25,33 @@ identify = WithField
 
 allTopics :: Response [TopicEntity]
 allTopics = do
-  repo <- getTopicsRepo <$> ask
-  topics <- liftIO $ Repo.all repo
+  db <- dbConnections <$> ask
+  topics <- liftIO $ Repo.all db
   return $ map (uncurry identify) topics
 
 lookupTopic :: TopicId -> Response TopicEntity
 lookupTopic topicId = do
-  repo <- getTopicsRepo <$> ask
-  let maybeTopic = identify topicId <$> Repo.lookup repo topicId
-  lift $ Handler $ maybeToExceptT err404 maybeTopic
+  db <- dbConnections <$> ask
+  maybeTopic <- liftIO $ Repo.lookup db topicId
+  maybe (throwError err404) (return . identify topicId) maybeTopic
 
 upsertTopic :: TopicId -> Topic -> Response TopicEntity
 upsertTopic id newTopic = do
-  repo <- getTopicsRepo <$> ask
-  liftIO $ Repo.upsert repo id newTopic
+  db <- dbConnections <$> ask
+  liftIO $ Repo.upsert db id newTopic
   return $ identify id newTopic
 
 createTopic :: Topic -> Response TopicEntity
 createTopic newTopic = do
-  repo <- getTopicsRepo <$> ask
+  db <- dbConnections <$> ask
   liftIO $ do
-    id <- Repo.generateId repo
-    inserted <- runMaybeT (Repo.insert repo id newTopic)
-    let ret = return (identify id newTopic)
-    maybe (throwIO err500) (const ret) inserted
+    topicId <- Repo.insert db newTopic
+    return $ identify topicId newTopic
 
 deleteTopic :: TopicId -> Response NoContent
 deleteTopic id = do
-  repo <- getTopicsRepo <$> ask
-  deleted <- liftIO $ Repo.delete repo id
+  db <- dbConnections <$> ask
+  deleted <- liftIO $ Repo.delete db id
   if deleted
     then return NoContent
     else lift (throwError err404)

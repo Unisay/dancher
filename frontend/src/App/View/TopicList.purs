@@ -38,9 +38,10 @@ expandedTopicCard topic@(Topic t) =
       body = do
               h4 ! id "situation" ! className "subtitle is-4" $ text t.subtitle
               p $ text t.body
-              h4 ! id "refs" $ text "Ссылки по теме"
-              ol $ for_ t.refs \reference ->
-                li ! className "reference" $ a ! href reference $ text reference
+              if t.refs then do 
+                h4 ! id "refs" $ text "Ссылки по теме"
+                ol $ for_ t.refs \reference ->
+                  li ! className "reference" $ a ! href reference $ text reference
               h4 ! id "questions" ! className "subtitle is-4" $ text "Вопросы"
               for_ t.questions \question -> do
                 article ! className "media" $ do

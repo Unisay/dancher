@@ -2,42 +2,26 @@ module Topic.Repo where
 
 import Topic.Domain
 import Lib.Prelude hiding (all)
-import Control.Monad.Trans.Maybe
-import qualified Data.Map as M
+import Data.Pool
+import Database.PostgreSQL.Simple
+import qualified Database as Db (Connections)
 
-type Repo = MVar (Map TopicId Topic)
+all :: Db.Connections -> IO [(TopicId, Topic)]
+all db = withResource db $ \c -> query_ c "select id, content from topic"
 
-newTopicRepo :: IO Repo
-newTopicRepo = newMVar M.empty
+lookup :: Db.Connections -> TopicId -> IO (Maybe Topic)
+lookup db id = withResource db $ \c -> do
+  rs <- query c "select content from topic where id = ?" (Only id)
+  return $ head (fmap fromOnly rs)
 
-generateId :: Repo -> IO TopicId
-generateId repo = do
-  m <- readMVar repo
-  let sorted = sortBy (flip compare) (M.keys m)
-  return $ fromMaybe 1 ((+1) <$> head sorted)
+upsert :: Db.Connections -> TopicId -> Topic -> IO ()
+upsert db id topic = withResource db $ \c ->
+  void $ execute c "insert into topic (id, content) values (?, ?)" (id, topic)
 
-all :: Repo -> IO [(TopicId, Topic)]
-all repo = do
-  m <- readMVar repo
-  return $ M.assocs m
+insert :: Db.Connections -> Topic -> IO TopicId
+insert db topic = withResource db $ \c ->
+  execute c "insert into topic (content) values (?)" (Only topic)
 
-lookup :: Repo -> TopicId -> MaybeT IO Topic
-lookup repo id = MaybeT $ do
-  m <- readMVar repo
-  return $ M.lookup id m
-
-upsert :: Repo -> TopicId -> Topic -> IO ()
-upsert repo id topic = do
-  m <- takeMVar repo
-  putMVar repo $! M.insert id topic m
-
-insert :: Repo -> TopicId -> Topic -> MaybeT IO ()
-insert repo id topic = MaybeT $ modifyMVar repo $ \m ->
-  if M.member id m
-  then return (m, Nothing)
-  else return (M.insert id topic m, Just ())
-
-delete :: Repo -> TopicId -> IO Bool
-delete repo id = modifyMVar repo f
-  where f m = let res = M.member id m
-              in return (M.delete id m, res)
+delete :: Db.Connections -> TopicId -> IO Bool
+delete db id = withResource db $ \c ->
+  (== id) <$> execute c "delete from topic where id = ?" (Only id)
