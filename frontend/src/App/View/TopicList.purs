@@ -3,9 +3,12 @@ module App.View.TopicList where
 import App.Events (Event(..))
 import App.State (State(..))
 import App.Types (Topic(..))
-import CSS (fromString, margin, marginTop, padding, paddingLeft, paddingRight, rem, (**), (?))
+import CSS (alignContent, alignItems, fromString, margin, marginTop, padding, paddingLeft, paddingRight, rem, (**), (?))
+import CSS.Common (center)
 import CSS.Stylesheet (CSS)
+import Control (onlyIf)
 import Data.Foldable (for_)
+import Data.List (List(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Monoid (mempty)
 import Prelude hiding (id,div)
@@ -38,13 +41,13 @@ expandedTopicCard topic@(Topic t) =
       body = do
               h4 ! id "situation" ! className "subtitle is-4" $ text t.subtitle
               p $ text t.body
-              if t.refs then do 
+              onlyIf (Nil /= t.refs) do
                 h4 ! id "refs" $ text "Ссылки по теме"
                 ol $ for_ t.refs \reference ->
                   li ! className "reference" $ a ! href reference $ text reference
               h4 ! id "questions" ! className "subtitle is-4" $ text "Вопросы"
               for_ t.questions \question -> do
-                article ! className "media" $ do
+                article ! className "question media" $ do
                   figure ! className "media-left" $
                     span ! className "icon is-large" $ i ! className "fa fa-question-circle-o" $ mempty
                   div ! className "media-content" $
@@ -82,5 +85,7 @@ topicCardStyle = do
     padding (rem 1.0) (rem 1.0) (rem 1.0) (rem 1.0)
   fromString "#questions" ?
     marginTop (rem 3.0)
+  fromString ".question" ?
+    alignItems center
   (fromString ".content" ** fromString ".media-left") ?
     margin (rem 0.5) (rem 0.5) (rem 0.5) (rem 0.5)
