@@ -3,7 +3,7 @@ module App.View.TopicList where
 import App.Events (Event(..))
 import App.State (State(..))
 import App.Types (Topic(..))
-import CSS (alignContent, alignItems, fromString, margin, marginTop, padding, paddingLeft, paddingRight, rem, (**), (?))
+import CSS (alignItems, fromString, margin, marginTop, padding, paddingLeft, paddingRight, rem, (**), (?))
 import CSS.Common (center)
 import CSS.Stylesheet (CSS)
 import Control (onlyIf)

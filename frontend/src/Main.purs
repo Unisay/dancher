@@ -23,7 +23,7 @@ type ClientEffects = CoreEffects (AppEffects (history :: HISTORY, dom :: DOM))
 
 main :: String -> State -> Eff ClientEffects WebApp
 main url state = do
-  chan <- channel LoadTopics
+  chan <- channel InitApp
   let appStatusSignal = subscribe chan
 
   -- | Create a signal of URL changes.
