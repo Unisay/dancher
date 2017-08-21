@@ -13,7 +13,7 @@ import Control.Monad.Eff.Exception (error)
 import Control.Monad.Error.Class (throwError)
 import Data.List (List, delete)
 import Data.Maybe (Maybe(..), maybe)
-import Facebook.Sdk (StatusInfo(..), AuthResponse, Sdk, defaultConfig, init, login, logout, loginStatus) as FB
+import Facebook.Sdk (Sdk, StatusInfo, defaultConfig, init, login, loginStatus, logout) as FB
 import Network.HTTP.Affjax (AJAX)
 import Pux (EffModel, noEffects, onlyEffects)
 
