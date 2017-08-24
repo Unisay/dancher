@@ -42,13 +42,13 @@ instance showTopic :: Show Topic where show = gShow
 instance decodeJsonTopic :: DecodeJson Topic where
   decodeJson json = do
     obj <- decodeJson json
-    id <- obj .? "id"
-    title <- obj .? "title"
+    id          <- obj .? "id"
+    title       <- obj .? "title"
     description <- obj .?? "description"
-    subtitle <- obj .? "subtitle"
-    body <- obj .? "body"
-    refs <- obj .? "refs"
-    questions <- obj .? "questions"
+    subtitle    <- obj .? "subtitle"
+    body        <- obj .? "body"
+    refs        <- obj .? "refs"
+    questions   <- obj .? "questions"
     pure $ Topic { id, title, description, subtitle, body, refs, questions }
 
 instance decodeJsonTopics :: DecodeJson Topics where

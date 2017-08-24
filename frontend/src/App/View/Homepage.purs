@@ -6,23 +6,23 @@ import App.State (State(..))
 import Control.Bind (discard)
 import Data.Function (($))
 import Data.List (List(..))
-import Data.Monoid (mempty)
 import Pux.DOM.HTML (HTML)
 import Text.Smolder.HTML (a, li, ul, div)
 import Text.Smolder.HTML.Attributes (className, id)
 import Text.Smolder.Markup ((!), text)
+import Markup (empty)
 
 view :: State -> HTML Event
 view (State { topics : Nil }) =
   div ! id "loading" $ do
-  	div ! className "loading1 loading" $ mempty
-  	div ! className "loading2 loading" $ mempty
-  	div ! className "loading3 loading" $ mempty
-  	div ! className "loading4 loading" $ mempty
-  	div ! className "loading5 loading" $ mempty
-  	div ! className "loading6 loading" $ mempty
-  	div ! className "loading7 loading" $ mempty
-  	div ! className "loading8 loading" $ mempty
+  	div ! className "loading1 loading" $ empty
+  	div ! className "loading2 loading" $ empty
+  	div ! className "loading3 loading" $ empty
+  	div ! className "loading4 loading" $ empty
+  	div ! className "loading5 loading" $ empty
+  	div ! className "loading6 loading" $ empty
+  	div ! className "loading7 loading" $ empty
+  	div ! className "loading8 loading" $ empty
 view s = do
   div ! className "tabs" $
     ul $ do
