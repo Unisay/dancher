@@ -11,14 +11,14 @@ import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Exception (error)
 import Control.Monad.Error.Class (throwError)
-import Data.List (List, delete)
+import Data.List (List(..), delete)
 import Data.Maybe (Maybe(..), maybe)
-import Facebook.Sdk (Sdk, StatusInfo, defaultConfig, init, login, loginStatus, logout) as FB
+import Facebook.Sdk (Sdk, StatusInfo(..), Status(..), AppId, defaultConfig, init, login, loginStatus, logout) as FB
 import Network.HTTP.Affjax (AJAX)
 import Pux (EffModel, noEffects, onlyEffects)
 
 data Event = PageView Route
-           | InitApp
+           | InitApp FB.AppId
            | TopicsLoaded (List Topic)
            | ExpandTopic Topic
            | ShrinkTopic Topic
@@ -33,11 +33,11 @@ data Event = PageView Route
 type AppEffects fx = (console :: CONSOLE, ajax :: AJAX | fx)
 
 facebookEffect :: ∀ e. State -> (FB.Sdk -> Aff e Event) -> Aff e (Maybe Event)
-facebookEffect (State st) f = maybe (throwError $ error "FB sdk isn't initialized") (f >>> map Just) st.facebookSdk
+facebookEffect (State st) f = maybe (throwError $ error "FB sdk isn't initialized") (f >>> map Just) st.fbSdk
 
 foldp :: ∀ fx. Event -> State -> EffModel State Event (AppEffects fx)
 foldp (FacebookSdkInitialized sdk) (State st) =
-  { state: State st { facebookSdk = Just sdk }
+  { state: State st { fbSdk = Just sdk }
   , effects: [ pure $ Just FacebookAuthRequest ]
   }
 
@@ -50,15 +50,30 @@ foldp FacebookLoginRequest state =
 foldp FacebookLogoutRequest state =
   onlyEffects state [ facebookEffect state (map UserAuth <<< FB.logout) ]
 
-foldp (UserAuth auth) (State st) =
-  noEffects $ State st { auth = auth }
+-- | Facebook Auth Status transition: * -> Connected
+foldp (UserAuth fbAuth)
+      (State st @ { fbAuth: (FB.StatusInfo { status: FB.Connected, authResponse: (Just _)}) }) =
+  { state: State st { fbAuth = fbAuth, topics = Nil }
+  , effects: [ Just <$> TopicsLoaded <$> loadTopics config ]
+  }
+
+-- | Facebook Auth Status transition: Connected -> *
+foldp (UserAuth fbAuth @ (FB.StatusInfo { status: FB.Connected, authResponse: auth })) (State st) =
+  { state: State st { fbAuth = fbAuth, topics = Nil }
+  , effects: [ Just <$> TopicsLoaded <$> loadTopics config ]
+  }
+
+-- | Facebook Auth Status transition: * -> *
+foldp (UserAuth fbAuth) (State st) =
+  noEffects $ State st { fbAuth = fbAuth }
+
 
 foldp (PageView route) (State st) =
   noEffects $ State st { route = route, loaded = true }
 
-foldp InitApp s =
+foldp (InitApp fbAppId) s =
   onlyEffects s [ Just <$> TopicsLoaded <$> loadTopics config
-                , Just <$> FacebookSdkInitialized <$> FB.init (FB.defaultConfig "320125848412942")
+                , Just <$> FacebookSdkInitialized <$> FB.init (FB.defaultConfig fbAppId)
                 ]
 
 foldp (TopicsLoaded topics) s@(State st) =
@@ -74,5 +89,6 @@ foldp (ArchiveTopic topic) (State st) =
   noEffects $ State st { topics = delete topic st.topics
                        , expanded = Nothing
                        }
+
 foldp MenuToggle (State st) =
   noEffects $ State st { menuActive = not st.menuActive }

@@ -18,8 +18,8 @@ newtype State = State
   , expanded :: Maybe Topic
   , archived :: List Topic
   , menuActive :: Boolean
-  , facebookSdk :: Maybe FB.Sdk
-  , auth :: FB.StatusInfo
+  , fbSdk :: Maybe FB.Sdk
+  , fbAuth :: FB.StatusInfo
   }
 
 derive instance newtypeState :: Newtype State _
@@ -33,6 +33,6 @@ init url = State
   , expanded: empty
   , menuActive: false
   , archived: empty
-  , facebookSdk: empty
-  , auth: FB.StatusInfo { status: Unknown, authResponse: Nothing }
+  , fbSdk: empty
+  , fbAuth: FB.StatusInfo { status: Unknown, authResponse: Nothing }
   }
