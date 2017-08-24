@@ -26,6 +26,8 @@ newtype State = State
 
 derive instance newtypeState :: Newtype State _
 
+-- | TODO: test roundtrip
+
 instance decodeJsonState :: DecodeJson State where
   decodeJson json = do
     o          <- decodeJson json
