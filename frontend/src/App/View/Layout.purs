@@ -8,7 +8,7 @@ import App.View.NotFound as NotFound
 import CSS (CSS, GenericFontFamily(GenericFontFamily), backgroundImage, backgroundRepeat, em, fontFamily, fontSize, fromString, marginLeft, padding, pct, rem, repeat, url, width, (?))
 import Control.Bind (discard)
 import Data.Function (const, (#), ($))
-import Data.Monoid (mempty, (<>))
+import Data.Monoid ((<>))
 import Data.NonEmpty (singleton)
 import Facebook.Sdk (StatusInfo(..), Status(..)) as FB
 import Pux.DOM.Events (onClick)
@@ -16,6 +16,7 @@ import Pux.DOM.HTML (HTML, style)
 import Text.Smolder.HTML (a, div, span, footer, h2, i, nav, p, section)
 import Text.Smolder.HTML.Attributes (className, href)
 import Text.Smolder.Markup (text, (!), (#!))
+import Markup (empty)
 
 view :: State -> HTML Event
 view s@(State st) = do
@@ -24,22 +25,22 @@ view s@(State st) = do
     div ! className "navbar-brand" $ do
       a ! className "navbar logo" $ text "Dancher"
       div ! className "navbar-burger" #! onClick (const MenuToggle) $ do
-        span $ mempty
-        span $ mempty
-        span $ mempty
+        span $ empty
+        span $ empty
+        span $ empty
     div ! className ("navbar-menu" <> if st.menuActive then " is-active" else "") $ do
       div ! className "navbar-end" $ do
         div ! className "navbar-item" $
-          case st.auth of
+          case st.fbAuth of
           FB.StatusInfo { status: FB.Connected } ->
             a ! className "button" #! onClick (const FacebookLogoutRequest) $ do
               span ! className "icon is-small" $
-                i ! className "fa fa-sign-out" $ mempty
+                i ! className "fa fa-sign-out" $ empty
               span $ text "Выйти"
           otherwise ->
             a ! className "button" #! onClick (const FacebookLoginRequest) $ do
               span ! className "icon is-small" $
-                i ! className "fa fa-sign-in" $ mempty
+                i ! className "fa fa-sign-in" $ empty
               span $ text "Войти"
 
   section ! className "hero is-primary" $ do
@@ -61,7 +62,7 @@ view s@(State st) = do
           a ! href "http://creativecommons.org/licenses/by-nc-sa/4.0/" $ text "CC ANS 4.0"
         p $
           a ! className "icon" ! href "https://github.com/unisay/dancher/" $
-            i ! className "fa fa-github" $ mempty
+            i ! className "fa fa-github" $ empty
 
 css :: CSS
 css = do

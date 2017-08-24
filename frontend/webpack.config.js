@@ -45,7 +45,11 @@ module.exports = {
     modules: [ path.join(__dirname, 'node_modules') ]
   },
   resolve: {
-    alias: { 'react': 'preact-compat', 'react-dom': 'preact-compat' },
+    alias: {
+      'react': 'preact-compat',
+      'react-dom': 'preact-compat',
+      'create-react-class': 'preact-compat/lib/create-react-class'
+    },
     modules: [ 'node_modules', 'bower_components' ],
     extensions: ['.js', '.purs']
   },
