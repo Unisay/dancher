@@ -4,6 +4,11 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 
-main :: forall e. Eff (console :: CONSOLE | e) Unit
-main = do
-  log "You should add some tests."
+import Test.Unit (suite, test, timeout)
+import Test.Unit.Main (runTest)
+import Test.Unit.Assert as Assert
+
+main = runTest do
+  suite "Json roundtrip" do
+    test "State" do
+      Assert.equal 4 (2 + 2) -- TODO: fix
