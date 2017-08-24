@@ -9,6 +9,6 @@ import Network.HTTP.Affjax (AJAX, get)
 
 loadTopics :: forall e. Config -> Aff (ajax :: AJAX | e) (List Topic)
 loadTopics config = do
-  res <- get (config.api_path <> "topics")
+  res <- get (config.pathApi <> "topics")
   let (Topics topics) = res.response
   pure topics

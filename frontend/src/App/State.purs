@@ -35,7 +35,7 @@ instance decodeJsonState :: DecodeJson State where
     url        <- o .? "route"
     loaded     <- o .? "loaded"
     topics     <- o .? "topics"
-    epanded :: Maybe Topic   <- o .? "expanded"
+    epanded :: Maybe Topic <- o .? "expanded"
     archived   <- o .? "archived"
     expanded   <- o .? "expanded"
     menuActive <- o .? "menuActive"

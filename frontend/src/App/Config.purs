@@ -1,9 +1,10 @@
 module App.Config where
 
 type Config =
-  { title :: String
-  , public_path :: String
-  , api_path :: String
+  { title      :: String
+  , pathPublic :: String
+  , pathApi    :: String
+  , fbAppId    :: String
   }
 
 foreign import config :: Config

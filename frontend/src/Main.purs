@@ -1,6 +1,7 @@
 module Main where
 
 import Prelude
+import App.Config (config)
 import App.Events (AppEffects, Event(..), foldp)
 import App.Routes (match)
 import App.State (State, init)
@@ -35,7 +36,7 @@ main url state = do
   storage <- localStorage win
   loadedState <- loadState storage
 
-  chan <- channel $ InitApp "320125848412942"
+  chan <- channel $ InitApp config.fbAppId
   let appStatusSignal = subscribe chan
 
   -- | Create a signal of URL changes.
