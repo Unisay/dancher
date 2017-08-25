@@ -3,8 +3,6 @@ module App.Types where
 import Prelude
 import Control.Monad.Except (ExceptT(..))
 import Data.Argonaut (class DecodeJson, class EncodeJson, Json, decodeJson, jsonEmptyObject, (.?), (:=), (~>))
-import Data.Argonaut.Decode ((.??))
-import Data.Argonaut.Encode.Generic (gEncodeJson)
 import Data.Bifunctor (lmap)
 import Data.Foreign (F, ForeignError(..))
 import Data.Generic (class Generic, gEq, gShow)

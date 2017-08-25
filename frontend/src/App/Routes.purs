@@ -7,7 +7,7 @@ import Data.Function (($))
 import Data.Functor ((<$))
 import Data.Maybe (fromMaybe)
 import Data.Tuple (Tuple(..))
-import Prelude (class Eq, class Show, bind, pure, show, (<$>), (<>), (>>=))
+import Prelude (class Eq, class Show, bind, pure, show, (<$>), (<>))
 import Pux.Router (end, router)
 
 data Route = Home | NotFound String
