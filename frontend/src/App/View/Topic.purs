@@ -1,19 +1,20 @@
 module App.View.Topic where
 
-import App.Events (Event(..))
 import App.Types (Topic(..))
+import App.Routes as R
+import App.Events (Event(..))
 import CSS (alignItems, fromString, margin, marginTop, padding, rem, (**), (?))
 import CSS.Common (center)
 import CSS.Stylesheet (CSS)
 import Data.Foldable (for_)
 import Data.List (List(Nil))
-import Markup (Part, empty)
+import Markup (empty)
+import Prelude hiding (id,div)
 import Pux.DOM.Events (onClick)
 import Pux.DOM.HTML (HTML, style)
 import Text.Smolder.HTML (a, article, div, figure, h2, h4, i, nav, p, span, ol, li)
 import Text.Smolder.HTML.Attributes (className, href, id)
 import Text.Smolder.Markup (text, (!), (#!))
-import Prelude hiding (id,div)
 
 view :: Topic -> HTML Event
 view topic@(Topic t) = do
@@ -22,7 +23,7 @@ view topic@(Topic t) = do
     article ! className "media" $
       div ! className "media-content" $ do
         div ! className "content" $ do
-          h2 $ topicHeader t.title (ShrinkTopic t.id)
+          h2 $ a ! className "topic-title" #! onClick (Navigate R.Topics) $ text t.title
           do
             h4 ! id "situation" ! className "subtitle is-4" $ text t.subtitle
             p $ text t.body
@@ -42,14 +43,7 @@ view topic@(Topic t) = do
           div ! className "level-left" $ div ! className "level-item" $
             a ! className "button is-small" #! onClick (const (ArchiveTopic topic)) $ text "В архив"
           div ! className "level-right" $ div ! className "level-item" $
-            cardButton (ShrinkTopic t.id) "Закрыть"
-
-topicHeader :: String -> Event -> Part
-topicHeader title event = a ! className "topic-title" #! onClick (const event) $ text title
-
-cardButton :: Event -> String -> Part
-cardButton ev caption =
-  a ! className "button is-primary is-small" #! onClick (const ev) $ text caption
+            a ! className "button is-primary is-small" #! onClick (Navigate R.Topics) $ text "Закрыть"
 
 topicCardStyle :: CSS
 topicCardStyle = do

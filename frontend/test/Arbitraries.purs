@@ -17,7 +17,7 @@ import Test.QuickCheck.Gen (Gen)
 newtype ArbRoute = ArbRoute R.Route
 derive instance newtypeArbRoute :: Newtype ArbRoute _
 instance arbitraryRoute :: Arbitrary ArbRoute where
-  arbitrary = oneOf $ map ArbRoute <$> pure R.Home :| [R.NotFound <$> pure "url"]
+  arbitrary = oneOf $ map ArbRoute <$> pure R.Topics :| [R.NotFound <$> pure "url"]
 
 
 newtype ArbTopic = ArbTopic Topic
@@ -48,16 +48,12 @@ instance arbitraryState :: Arbitrary ArbState where
   arbitrary = do
     title <- arbitrary
     (ArbRoute route) <- arbitrary
-    loaded <- arbitrary
     topics <- map unwrap <$> (arbitrary :: Gen (List ArbTopic))
-    expanded <- arbitrary
     archived <- map unwrap <$> (arbitrary :: Gen (List ArbTopic))
     menuActive <- arbitrary
     pure $ ArbState $ State { title: title
                             , route: route
-                            , loaded: loaded
                             , topics: topics
-                            , expanded: expanded
                             , archived: archived
                             , menuActive: menuActive
                             , fbSdk: Nothing

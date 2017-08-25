@@ -5,10 +5,10 @@ import App.View.NotFound as NotFound
 import App.Events (Event(..))
 import App.Routes (Route(..))
 import App.State (State(..))
-import CSS (CSS, GenericFontFamily(GenericFontFamily), backgroundImage, backgroundRepeat, em, fontFamily, fontSize, fromString, marginLeft, padding, pct, rem, repeat, url, width, (?))
+import CSS (CSS, GenericFontFamily(GenericFontFamily), backgroundImage, backgroundColor, backgroundRepeat, em
+           , fontFamily, fontSize, fromString, marginLeft, padding, pct, rem, rgba, repeat, url, width, (?))
 import Control.Bind (discard)
 import Data.Function (const, (#), ($))
-import Data.Maybe (Maybe(..))
 import Data.Monoid ((<>))
 import Data.NonEmpty (singleton)
 import Facebook.Sdk (StatusInfo(..), Status(..)) as FB
@@ -49,9 +49,8 @@ view state @ (State st) = do
       div ! className "container" $ do
         h2 ! className "subtitle" $ text "Всегда есть о чём поговорить!"
   case st.route of
-    (Home) -> Homepage.view state
-    (Topic id) -> Homepage.view $ State st { expanded = Just id }
     (NotFound url) -> NotFound.view state
+    otherwise -> Homepage.view state
 
   footer ! className "footer" $
     div ! className "container" $
@@ -79,3 +78,5 @@ css = do
     marginLeft (0.5 #em)
     fontFamily ["Chewy"] (singleton (GenericFontFamily $ fromString "cursive"))
     fontSize $ em 2.0
+  fromString ".footer" ?
+    backgroundColor (rgba 0 0 0 0.0)
