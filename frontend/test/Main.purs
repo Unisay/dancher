@@ -27,6 +27,7 @@ main = runTest do
     test "Route" $ quickCheck routeRoundtrip
     test "Topic" $ quickCheck topicRoundtrip
     test "State" $ quickCheck stateRoundtrip
+  -- todo url roundTrip
 
 roundTrip :: ∀ a. Show a => Eq a => EncodeJson a => DecodeJson a => a -> Result
 roundTrip a =

@@ -3,7 +3,7 @@ module App.State where
 import Prelude
 import App.Config (config)
 import App.Routes (Route, match)
-import App.Types (Topic)
+import App.Types (Topic, TopicId)
 import Control.Plus (empty)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson, jsonEmptyObject, (.?), (:=), (~>))
 import Data.List (List)
@@ -16,7 +16,7 @@ newtype State = State
   , route :: Route
   , loaded :: Boolean
   , topics :: List Topic
-  , expanded :: Maybe Topic
+  , expanded :: Maybe TopicId
   , archived :: List Topic
   , menuActive :: Boolean
   , fbSdk :: Maybe FB.Sdk

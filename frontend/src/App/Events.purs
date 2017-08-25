@@ -1,12 +1,11 @@
 module App.Events where
 
 import Prelude
-
 import App.Backend (loadTopics)
 import App.Config (config)
 import App.Routes (Route)
 import App.State (State(..))
-import App.Types (Topic)
+import App.Types (Topic, TopicId)
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Exception (error)
@@ -20,8 +19,8 @@ import Pux (EffModel, noEffects, onlyEffects)
 data Event = PageView Route
            | InitApp FB.AppId
            | TopicsLoaded (List Topic)
-           | ExpandTopic Topic
-           | ShrinkTopic Topic
+           | ExpandTopic TopicId
+           | ShrinkTopic TopicId
            | ArchiveTopic Topic
            | FacebookSdkInitialized FB.Sdk
            | FacebookAuthRequest
@@ -79,8 +78,8 @@ foldp (InitApp fbAppId) s =
 foldp (TopicsLoaded topics) s@(State st) =
   noEffects $ State st { topics = topics }
 
-foldp (ExpandTopic topic) (State st) =
-  noEffects $ State st { expanded = Just topic }
+foldp (ExpandTopic topicId) (State st) =
+  noEffects $ State st { expanded = Just topicId }
 
 foldp (ShrinkTopic topic) (State st) =
   noEffects $ State st { expanded = Nothing }
