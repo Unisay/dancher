@@ -1,25 +1,26 @@
 module App.View.Layout where
 
-import App.Events (Event(..))
-import App.Routes (Route(NotFound, Home))
-import App.State (State(..))
 import App.View.Homepage as Homepage
 import App.View.NotFound as NotFound
-import CSS (CSS, GenericFontFamily(GenericFontFamily), backgroundImage, backgroundRepeat, em, fontFamily, fontSize, fromString, marginLeft, padding, pct, rem, repeat, url, width, (?))
+import App.Events (Event(..))
+import App.Routes (Route(..))
+import App.State (State(..))
+import CSS (CSS, GenericFontFamily(GenericFontFamily), backgroundImage, backgroundColor, backgroundRepeat, em
+           , fontFamily, fontSize, fromString, marginLeft, padding, pct, rem, rgba, repeat, url, width, (?))
 import Control.Bind (discard)
 import Data.Function (const, (#), ($))
 import Data.Monoid ((<>))
 import Data.NonEmpty (singleton)
 import Facebook.Sdk (StatusInfo(..), Status(..)) as FB
+import Markup (empty)
 import Pux.DOM.Events (onClick)
 import Pux.DOM.HTML (HTML, style)
 import Text.Smolder.HTML (a, div, span, footer, h2, i, nav, p, section)
 import Text.Smolder.HTML.Attributes (className, href)
 import Text.Smolder.Markup (text, (!), (#!))
-import Markup (empty)
 
 view :: State -> HTML Event
-view s@(State st) = do
+view state @ (State st) = do
   style css
   nav ! className "navbar" $ do
     div ! className "navbar-brand" $ do
@@ -48,8 +49,8 @@ view s@(State st) = do
       div ! className "container" $ do
         h2 ! className "subtitle" $ text "Всегда есть о чём поговорить!"
   case st.route of
-    (Home) -> Homepage.view s
-    (NotFound url) -> NotFound.view s
+    (NotFound url) -> NotFound.view state
+    otherwise -> Homepage.view state
 
   footer ! className "footer" $
     div ! className "container" $
@@ -77,3 +78,5 @@ css = do
     marginLeft (0.5 #em)
     fontFamily ["Chewy"] (singleton (GenericFontFamily $ fromString "cursive"))
     fontSize $ em 2.0
+  fromString ".footer" ?
+    backgroundColor (rgba 0 0 0 0.0)

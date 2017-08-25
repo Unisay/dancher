@@ -1,9 +1,9 @@
 module Test.Arbitraries where
 
 import Prelude
-import App.Routes (Route(..))
+import App.Routes (Route(..)) as R
 import App.State (State(..))
-import App.Types (Topic(..))
+import App.Types (Topic(Topic))
 import Control.Monad.Gen (oneOf)
 import Data.Argonaut (class EncodeJson)
 import Data.List (List)
@@ -14,10 +14,10 @@ import Facebook.Sdk (Status(Unknown), StatusInfo(StatusInfo)) as FB
 import Test.QuickCheck (class Arbitrary, arbitrary)
 import Test.QuickCheck.Gen (Gen)
 
-newtype ArbRoute = ArbRoute Route
+newtype ArbRoute = ArbRoute R.Route
 derive instance newtypeArbRoute :: Newtype ArbRoute _
 instance arbitraryRoute :: Arbitrary ArbRoute where
-  arbitrary = oneOf $ map ArbRoute <$> pure Home :| [NotFound <$> pure "url"]
+  arbitrary = oneOf $ map ArbRoute <$> pure R.Topics :| [R.NotFound <$> pure "url"]
 
 
 newtype ArbTopic = ArbTopic Topic
@@ -48,16 +48,12 @@ instance arbitraryState :: Arbitrary ArbState where
   arbitrary = do
     title <- arbitrary
     (ArbRoute route) <- arbitrary
-    loaded <- arbitrary
     topics <- map unwrap <$> (arbitrary :: Gen (List ArbTopic))
-    expanded <- map unwrap <$> (arbitrary :: Gen (Maybe ArbTopic))
     archived <- map unwrap <$> (arbitrary :: Gen (List ArbTopic))
     menuActive <- arbitrary
     pure $ ArbState $ State { title: title
                             , route: route
-                            , loaded: loaded
                             , topics: topics
-                            , expanded: expanded
                             , archived: archived
                             , menuActive: menuActive
                             , fbSdk: Nothing

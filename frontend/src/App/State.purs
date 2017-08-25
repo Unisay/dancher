@@ -14,9 +14,7 @@ import Facebook.Sdk (Sdk, Status(..), StatusInfo(StatusInfo)) as FB
 newtype State = State
   { title :: String
   , route :: Route
-  , loaded :: Boolean
   , topics :: List Topic
-  , expanded :: Maybe Topic
   , archived :: List Topic
   , menuActive :: Boolean
   , fbSdk :: Maybe FB.Sdk
@@ -29,9 +27,7 @@ instance eqState :: Eq State where
   eq (State s) (State s') =
     s.title == s'.title
     && s.route == s'.route
-    && s.loaded == s'.loaded
     && s.topics == s'.topics
-    && s.expanded == s'.expanded
     && s.archived == s'.archived
     && s.menuActive == s'.menuActive
 
@@ -43,16 +39,12 @@ instance decodeJsonState :: DecodeJson State where
     o <- decodeJson json
     title <- o .? "title"
     route <- o .? "route"
-    loaded <- o .? "loaded"
     topics <- o .? "topics"
     archived <- o .? "archived"
-    expanded <- o .? "expanded"
     menuActive <- o .? "menuActive"
     pure $ State { title: title
                  , route: route
-                 , loaded: loaded
                  , topics: topics
-                 , expanded: expanded
                  , archived: archived
                  , menuActive: menuActive
                  , fbSdk: Nothing
@@ -65,9 +57,7 @@ instance encodeJsonState :: EncodeJson State where
   encodeJson (State st) =
        "title"      := st.title
     ~> "route"      := st.route
-    ~> "loaded"     := st.loaded
     ~> "topics"     := st.topics
-    ~> "expanded"   := st.expanded
     ~> "archived"   := st.archived
     ~> "menuActive" := st.menuActive
     ~> jsonEmptyObject
@@ -76,9 +66,7 @@ init :: String -> State
 init url = State
   { title: config.title
   , route: match url
-  , loaded: false
   , topics: empty
-  , expanded: empty
   , menuActive: false
   , archived: empty
   , fbSdk: empty
