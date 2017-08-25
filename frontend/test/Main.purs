@@ -1,27 +1,45 @@
 
 module Test.Main where
 
-import Prelude
-
-import App.State (State(..))
+import Test.Arbitraries
+import Control.Monad.Aff.AVar (AVAR)
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Eff.Random (RANDOM)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson)
 import Data.Either (either)
-import Data.Newtype (class Newtype)
-import Test.Unit (Test, failure, suite, test, timeout)
-import Test.Unit.Assert as Assert
+import Data.Newtype (unwrap)
+import Prelude (class Eq, class Show, Unit, discard, show, ($), (<>), (>>>))
+import Test.QuickCheck (Result(Failed), assertEquals)
+import Test.Unit (suite, test)
+import Test.Unit.Console (TESTOUTPUT)
 import Test.Unit.Main (runTest)
 import Test.Unit.QuickCheck (quickCheck)
-import Test.Arbitraries
 
+main :: ∀ e. Eff ( console    :: CONSOLE
+                 , testOutput :: TESTOUTPUT
+                 , avar       :: AVAR
+                 , random     :: RANDOM
+                 | e
+                 ) Unit
 main = runTest do
   suite "Json roundtrip" do
-    test "State" do
-      quickCheck stateRoundtrip
+    test "Route" $ quickCheck routeRoundtrip
+    test "Topic" $ quickCheck topicRoundtrip
+    test "State" $ quickCheck stateRoundtrip
 
-roundTrip :: ∀ a e. Eq a => EncodeJson a => DecodeJson a => a -> Boolean
-roundTrip a = either (const false) (eq a) $ decodeJson (encodeJson a)
+roundTrip :: ∀ a. Show a => Eq a => EncodeJson a => DecodeJson a => a -> Result
+roundTrip a =
+  let json = encodeJson a
+      fail e = Failed $ "Failed to decode " <> (show json) <> ": " <> e
+      verify = assertEquals a
+  in either fail verify $ decodeJson json
 
-stateRoundtrip :: ∀ e. ArbState -> Boolean
-stateRoundtrip = roundTrip
+routeRoundtrip :: ArbRoute -> Result
+routeRoundtrip = unwrap >>> roundTrip
+
+topicRoundtrip :: ArbTopic -> Result
+topicRoundtrip = unwrap >>> roundTrip
+
+stateRoundtrip :: ArbState -> Result
+stateRoundtrip = unwrap >>> roundTrip
