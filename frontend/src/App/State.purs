@@ -10,8 +10,7 @@ import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson
 import Data.List (List)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
-import Facebook.Sdk (Sdk, StatusInfo(StatusInfo), Status(..)) as FB
-import Facebook.Sdk (Status(..))
+import Facebook.Sdk (Sdk, Status(..), StatusInfo(StatusInfo)) as FB
 
 newtype State = State
   { title :: String
@@ -85,5 +84,5 @@ init url = State
   , menuActive: false
   , archived: empty
   , fbSdk: empty
-  , fbAuth: FB.StatusInfo { status: Unknown, authResponse: Nothing }
+  , fbAuth: FB.StatusInfo { status: FB.Unknown, authResponse: Nothing }
   }
