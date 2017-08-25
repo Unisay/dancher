@@ -5,6 +5,7 @@ import App.View.TopicList as TopicList
 import App.Events (Event)
 import App.State (State(..))
 import App.Types (Topic(..))
+import App.Routes as R
 import CSS.Stylesheet (CSS)
 import CSS (fromString, padding, paddingLeft, paddingRight, rem, (?))
 import Data.List (List(..), find)
@@ -14,7 +15,7 @@ import Pux.DOM.HTML (HTML, style)
 import Text.Smolder.HTML (a, li, ul, div)
 import Text.Smolder.HTML.Attributes (className, id)
 import Text.Smolder.Markup ((!), text)
-import Prelude hiding (id,div)
+import Prelude hiding (id, div)
 
 view :: State -> HTML Event
 view (State { topics : Nil }) =
@@ -34,11 +35,13 @@ view state @ (State st) = do
       li ! className "is-active" $ a (text "Все темы")
       li $ a (text "Избранные темы")
       li $ a (text "Архив тем")
-  let topicById id = find (\(Topic t) -> t.id == id) st.topics
-      expandedTopic = st.expanded >>= topicById
-      topicsList = TopicList.view st.topics
   div ! className "topic-cards container" $
-    maybe topicsList Topic.view expandedTopic
+    case st.route of
+      (R.Topic id) ->
+        maybe (TopicList.view st.topics) Topic.view $
+          find (\(Topic t) -> t.id == id) st.topics
+      otherwise ->
+        TopicList.view st.topics
 
 topicCardStyle :: CSS
 topicCardStyle = do

@@ -1,26 +1,36 @@
 module App.Events where
 
 import Prelude
+
 import App.Backend (loadTopics)
 import App.Config (config)
-import App.Routes (Route)
+import App.Routes (Route) as R
+import App.Routes (match, toURL)
 import App.State (State(..))
-import App.Types (Topic, TopicId)
+import App.Types (Topic)
 import Control.Monad.Aff (Aff)
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Eff.Exception (error)
 import Control.Monad.Error.Class (throwError)
+import DOM (DOM)
+import DOM.Event.Event (preventDefault)
+import DOM.HTML (window)
+import DOM.HTML.History (DocumentTitle(..), URL(..), pushState)
+import DOM.HTML.Types (HISTORY)
+import DOM.HTML.Window (history)
+import Data.Foreign (toForeign)
 import Data.List (List(..), delete)
 import Data.Maybe (Maybe(..), maybe)
 import Facebook.Sdk (Sdk, StatusInfo(..), Status(..), AppId, defaultConfig, init, login, loginStatus, logout) as FB
 import Network.HTTP.Affjax (AJAX)
 import Pux (EffModel, noEffects, onlyEffects)
+import Pux.DOM.Events (DOMEvent)
 
-data Event = PageView Route
+data Event = PageView R.Route
+           | Navigate R.Route DOMEvent
            | InitApp FB.AppId
            | TopicsLoaded (List Topic)
-           | ExpandTopic TopicId
-           | ShrinkTopic TopicId
            | ArchiveTopic Topic
            | FacebookSdkInitialized FB.Sdk
            | FacebookAuthRequest
@@ -29,7 +39,7 @@ data Event = PageView Route
            | UserAuth FB.StatusInfo
            | MenuToggle
 
-type AppEffects fx = (console :: CONSOLE, ajax :: AJAX | fx)
+type AppEffects fx = (console :: CONSOLE, ajax :: AJAX, dom :: DOM, history :: HISTORY | fx)
 
 facebookEffect :: ∀ e. State -> (FB.Sdk -> Aff e Event) -> Aff e (Maybe Event)
 facebookEffect (State st) f = maybe (throwError $ error "FB sdk isn't initialized") (f >>> map Just) st.fbSdk
@@ -66,9 +76,17 @@ foldp (UserAuth fbAuth @ (FB.StatusInfo { status: FB.Connected, authResponse: au
 foldp (UserAuth fbAuth) (State st) =
   noEffects $ State st { fbAuth = fbAuth }
 
-
+foldp (Navigate route ev) st =
+  onlyEffects st [ liftEff do
+                     let url = toURL route
+                     preventDefault ev
+                     h <- history =<< window
+                     pushState (toForeign {}) (DocumentTitle "") (URL url) h
+                     pure $ Just $ PageView (match url)
+                 ]
 foldp (PageView route) (State st) =
-  noEffects $ State st { route = route, loaded = true }
+  noEffects $ State st { route = route }
+
 
 foldp (InitApp fbAppId) s =
   onlyEffects s [ Just <$> TopicsLoaded <$> loadTopics config
@@ -78,16 +96,8 @@ foldp (InitApp fbAppId) s =
 foldp (TopicsLoaded topics) s@(State st) =
   noEffects $ State st { topics = topics }
 
-foldp (ExpandTopic topicId) (State st) =
-  noEffects $ State st { expanded = Just topicId }
-
-foldp (ShrinkTopic topic) (State st) =
-  noEffects $ State st { expanded = Nothing }
-
 foldp (ArchiveTopic topic) (State st) =
-  noEffects $ State st { topics = delete topic st.topics
-                       , expanded = Nothing
-                       }
+  noEffects $ State st { topics = delete topic st.topics }
 
 foldp MenuToggle (State st) =
   noEffects $ State st { menuActive = not st.menuActive }

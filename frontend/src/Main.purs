@@ -43,7 +43,7 @@ main url state = do
   urlSignal <- sampleURL win
 
   -- | Map a signal of URL changes to PageView actions.
-  let routeSignal = urlSignal ~> \r -> PageView (match r)
+  let routeSignal = urlSignal ~> match >>> PageView
 
   -- | Start the app.
   app <- start { initialState: loadedState
