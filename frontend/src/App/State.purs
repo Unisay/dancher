@@ -1,9 +1,8 @@
 module App.State where
 
 import Prelude
-
 import App.Config (config)
-import App.Routes (Route, match, toURL)
+import App.Routes (Route, match)
 import App.Types (Topic)
 import Control.Plus (empty)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson, jsonEmptyObject, (.?), (:=), (~>))
@@ -43,15 +42,14 @@ instance decodeJsonState :: DecodeJson State where
   decodeJson json = do
     o <- decodeJson json
     title <- o .? "title"
-    url <- o .? "route"
+    route <- o .? "route"
     loaded <- o .? "loaded"
     topics <- o .? "topics"
-    epanded :: Maybe Topic <- o .? "expanded"
     archived <- o .? "archived"
     expanded <- o .? "expanded"
     menuActive <- o .? "menuActive"
     pure $ State { title: title
-                 , route: match url
+                 , route: route
                  , loaded: loaded
                  , topics: topics
                  , expanded: expanded
@@ -66,7 +64,7 @@ instance decodeJsonState :: DecodeJson State where
 instance encodeJsonState :: EncodeJson State where
   encodeJson (State st) =
        "title"      := st.title
-    ~> "route"      := toURL st.route
+    ~> "route"      := st.route
     ~> "loaded"     := st.loaded
     ~> "topics"     := st.topics
     ~> "expanded"   := st.expanded

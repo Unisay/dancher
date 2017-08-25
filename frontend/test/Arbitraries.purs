@@ -5,7 +5,7 @@ import App.Routes (Route(..))
 import App.State (State(..))
 import App.Types (Topic(..))
 import Control.Monad.Gen (oneOf)
-import Data.Argonaut (class DecodeJson, class EncodeJson)
+import Data.Argonaut (class EncodeJson)
 import Data.List (List)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype, unwrap)
@@ -15,12 +15,15 @@ import Test.QuickCheck (class Arbitrary, arbitrary)
 import Test.QuickCheck.Gen (Gen)
 
 newtype ArbRoute = ArbRoute Route
+derive instance newtypeArbRoute :: Newtype ArbRoute _
 instance arbitraryRoute :: Arbitrary ArbRoute where
-  arbitrary = oneOf $ map ArbRoute <$> pure Home :| [NotFound <$> arbitrary]
+  arbitrary = oneOf $ map ArbRoute <$> pure Home :| [NotFound <$> pure "url"]
 
 
 newtype ArbTopic = ArbTopic Topic
 derive instance newtypeArbTopic :: Newtype ArbTopic _
+derive newtype instance encodeJsonArbTopic :: EncodeJson ArbTopic
+derive newtype instance showArbTopic :: Show ArbTopic
 instance arbitraryTopic :: Arbitrary ArbTopic where
   arbitrary = do
     id <- arbitrary
@@ -40,10 +43,7 @@ instance arbitraryTopic :: Arbitrary ArbTopic where
                             }
 
 newtype ArbState = ArbState State
-derive newtype instance eqArbState :: Eq ArbState
-derive newtype instance showArbState :: Show ArbState
-derive newtype instance encodeArbState :: EncodeJson ArbState
-derive newtype instance decodeArbState :: DecodeJson ArbState
+derive instance newtypeArbState :: Newtype ArbState _
 instance arbitraryState :: Arbitrary ArbState where
   arbitrary = do
     title <- arbitrary
@@ -61,7 +61,7 @@ instance arbitraryState :: Arbitrary ArbState where
                             , archived: archived
                             , menuActive: menuActive
                             , fbSdk: Nothing
-                            , fbAuth: FB.StatusInfo { status: FB.Unknown
+                            , fbAuth: FB.StatusInfo { status: FB.Unknown -- TODO arbtrary
                                                     , authResponse: Nothing
                                                     }
                             }
