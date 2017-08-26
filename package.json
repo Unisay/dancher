@@ -1,0 +1,16 @@
+{
+  "name": "dancher",
+  "version": "0.0.1",
+  "scripts": { "postinstall": "cd frontend && npm install" },
+  "repository": { "type": "git", "url": "git://github.com/unisay/dancher.git" },
+  "author": "Yuriy V. Lazarev",
+  "license": "GPL-3.0+",
+  "bugs": { "url": "https://github.com/unisay/dancher/issues" },
+  "engines": { "node": "^6.0.0" },
+  "dependencies": {
+    "bower": "latest",
+    "purs": "latest",
+    "pulp": "latest",
+    "uglify-js": "latest"
+  }
+}
