@@ -1,8 +1,8 @@
 module App.View.TopicList where
 
 import App.Events (Event(..))
-import App.Types (Topic(..))
 import App.Routes (Route(..)) as R
+import App.Types (Topic(..))
 import Data.Foldable (for_)
 import Data.List (List)
 import Data.Maybe (fromMaybe)
@@ -11,7 +11,7 @@ import Prelude hiding (id,div)
 import Pux.DOM.Events (onClick)
 import Pux.DOM.HTML (HTML)
 import Text.Smolder.HTML (a, article, div, h2, nav)
-import Text.Smolder.HTML.Attributes (className)
+import Text.Smolder.HTML.Attributes (className, href)
 import Text.Smolder.Markup (text, (!), (#!))
 
 view :: List Topic -> HTML Event
@@ -29,4 +29,6 @@ viewCollapsedTopic topic @ (Topic { id: id, title: title, description: descripti
           div ! className "level-left" $ div ! className "level-item" $
             a ! className "button is-small" #! onClick (const (ArchiveTopic topic)) $ text "В архив"
           div ! className "level-right" $ div ! className "level-item" $
-            a ! className "button is-primary is-small" #! onClick (Navigate (R.Topic id)) $ text "Открыть"
+            a ! className "button is-primary is-small"
+              ! href ("#topic/" <> (show id))
+              #! onClick (Navigate (R.Topic id)) $ text "Открыть"
