@@ -6,6 +6,7 @@ import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson
 import Data.Argonaut.Core as A
 import Data.Function (($))
 import Data.Functor ((<$))
+import Data.Int (toNumber)
 import Data.Maybe (fromMaybe)
 import Data.StrMap as M
 import Data.Tuple (Tuple(..))
@@ -27,7 +28,7 @@ instance encodeJsonRoute :: EncodeJson Route where
     A.fromObject (M.fromFoldable [ Tuple "key" (A.fromString "Topics") ])
   encodeJson (Topic id) = encodeJson $
     A.fromObject (M.fromFoldable [ Tuple "key" (A.fromString "Topic")
-                                 , Tuple "topic" (A.fromString (show id))
+                                 , Tuple "topic" (A.fromNumber (toNumber id))
                                  ])
   encodeJson (NotFound url) = encodeJson $
     A.fromObject (M.fromFoldable [ Tuple "key" (A.fromString "NotFound")
