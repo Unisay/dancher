@@ -85,8 +85,7 @@ foldp (Navigate route ev) st =
                      pure $ Just $ PageView (match url)
                  ]
 foldp (PageView route) (State st) =
-  noEffects $ State st { route = route }
-
+  { state: State st { route = route }, effects: [] }
 
 foldp (InitApp fbAppId) s =
   onlyEffects s [ Just <$> TopicsLoaded <$> loadTopics config

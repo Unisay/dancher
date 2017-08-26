@@ -30,4 +30,3 @@ serveWebApp root =
 
 staticServer :: Server StaticApi
 staticServer = serveWebApp "frontend/static"
-
