@@ -41,6 +41,8 @@ library
                      , aeson
                      , aeson-injector
                      , wai
+                     , wai-app-static
+                     , filepath
                      , lucid
                      , directory
                      , blaze-html
