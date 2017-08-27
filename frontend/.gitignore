@@ -8,3 +8,4 @@
 /.purs*
 /.psa*
 *.log
+/static/bundle.js

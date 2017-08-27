@@ -9,7 +9,7 @@ import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson
 import Data.List (List)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
-import Facebook.Sdk (Sdk, Status(..), StatusInfo(StatusInfo)) as FB
+import Facebook.Sdk as FB
 
 newtype State = State
   { title :: String
@@ -19,6 +19,7 @@ newtype State = State
   , menuActive :: Boolean
   , fbSdk :: Maybe FB.Sdk
   , fbAuth :: FB.StatusInfo
+  , fbUserInfo :: Maybe FB.UserInfo
   }
 
 derive instance newtypeState :: Newtype State _
@@ -51,6 +52,7 @@ instance decodeJsonState :: DecodeJson State where
                  , fbAuth: FB.StatusInfo { status: FB.Unknown
                                          , authResponse: Nothing
                                          }
+                 , fbUserInfo: Nothing -- TODO: 
                  }
 
 instance encodeJsonState :: EncodeJson State where
@@ -71,4 +73,5 @@ init url = State
   , archived: empty
   , fbSdk: empty
   , fbAuth: FB.StatusInfo { status: FB.Unknown, authResponse: Nothing }
+  , fbUserInfo: empty
   }

@@ -1,23 +1,23 @@
 module App.View.Layout where
 
-import App.View.Homepage as Homepage
-import App.View.NotFound as NotFound
 import App.Events (Event(..))
 import App.Routes (Route(..))
 import App.State (State(..))
-import CSS (CSS, GenericFontFamily(GenericFontFamily), backgroundImage, backgroundColor, backgroundRepeat, em
-           , fontFamily, fontSize, fromString, marginLeft, padding, pct, rem, rgba, repeat, url, width, (?))
+import App.View.Homepage as Homepage
+import App.View.NotFound as NotFound
+import CSS (CSS, GenericFontFamily(GenericFontFamily), backgroundImage, backgroundColor, backgroundRepeat, em, fontFamily, fontSize, fromString, marginLeft, padding, pct, rem, rgba, repeat, url, width, (?))
 import Control.Bind (discard)
 import Data.Function (const, (#), ($))
-import Data.Monoid ((<>))
+import Data.Maybe (Maybe(..), isNothing)
+import Data.Monoid (mempty, (<>))
 import Data.NonEmpty (singleton)
-import Facebook.Sdk (StatusInfo(..), Status(..)) as FB
+import Facebook.Sdk as FB
 import Markup (empty)
 import Pux.DOM.Events (onClick)
 import Pux.DOM.HTML (HTML, style)
-import Text.Smolder.HTML (a, div, span, footer, h2, i, nav, p, section)
-import Text.Smolder.HTML.Attributes (className, href)
-import Text.Smolder.Markup (text, (!), (#!))
+import Text.Smolder.HTML (a, button, div, footer, h2, i, nav, p, section, span)
+import Text.Smolder.HTML.Attributes (className, disabled, href)
+import Text.Smolder.Markup (attribute, text, (!), (#!))
 
 view :: State -> HTML Event
 view state @ (State st) = do
@@ -32,14 +32,26 @@ view state @ (State st) = do
     div ! className ("navbar-menu" <> if st.menuActive then " is-active" else "") $ do
       div ! className "navbar-end" $ do
         div ! className "navbar-item" $
-          case st.fbAuth of
-          FB.StatusInfo { status: FB.Connected } ->
-            a ! className "button" #! onClick (const FacebookLogoutRequest) $ do
-              span ! className "icon is-small" $
-                i ! className "fa fa-sign-out" $ empty
-              span $ text "Выйти"
+          case st.fbUserInfo of
+          Just (FB.UserInfo { name: (FB.UserName name)}) ->
+            div ! className "dropdown is-hoverable" $ do
+              div ! className "dropdown-trigger" $
+                button ! className "button"
+                       ! attribute "aria-haspopup" "true"
+                       ! attribute "aria-controls" "dropdown-menu" $ do
+                  span $ text name
+                  span ! className "icon is-small" $
+                    i ! className "fa fa-angle-down"
+                      ! attribute "aria-hidden" "true" $ empty
+              div ! className "dropdown-menu" ! attribute "role" "menu" $
+                div ! className "dropdown-content" $
+                  a ! className "dropdown-item" #! onClick (const FacebookLogoutRequest) $ do
+                    span ! className "icon is-small" $ i ! className "fa fa-sign-out" $ empty
+                    text "Выйти"
           otherwise ->
-            a ! className "button" #! onClick (const FacebookLoginRequest) $ do
+            a ! className "button"
+              ! (if (isNothing st.fbSdk) then disabled "disabled" else mempty)
+              #! onClick (const FacebookLoginRequest) $ do
               span ! className "icon is-small" $
                 i ! className "fa fa-sign-in" $ empty
               span $ text "Войти"
