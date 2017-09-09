@@ -12,19 +12,16 @@ import Database.PostgreSQL.Simple.ToField (toField, ToField)
 type TopicId = Int64
 
 data Topic = Topic
-  { getTopicTitle :: Text
-  , getTopicDescription :: Maybe Text
-  , getTopicSubtitle :: Text
-  , getTopicBody :: Text
-  , getTopicQuestions :: [Text]
-  , getTopicRefs :: [Text] -- todo: named references + lang
+  { title     :: Text
+  , shortText :: Text
+  , fullText  :: Text
+  , questions :: [Text]
   } deriving (Eq, Show, Generic)
 
 topicJsonOpts :: Options
-topicJsonOpts = defaultOptions { fieldLabelModifier = camelCase . stripPrefix
+topicJsonOpts = defaultOptions { fieldLabelModifier = camelTo2 '_'
                                , omitNothingFields = True
-                               } where camelCase = camelTo2 '_'
-                                       stripPrefix = drop 8
+                               }
 
 instance ToJSON Topic where
   toJSON = genericToJSON topicJsonOpts

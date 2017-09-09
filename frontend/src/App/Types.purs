@@ -19,10 +19,8 @@ type TopicId = Int
 newtype Topic = Topic
   { id :: TopicId
   , title :: String
-  , description :: Maybe String
-  , subtitle :: String
-  , body :: String
-  , refs :: List String
+  , shortText :: String
+  , fullText :: String
   , questions :: List String
   }
 
@@ -41,12 +39,10 @@ instance decodeJsonTopic :: DecodeJson Topic where
     obj <- decodeJson json
     id <- obj .? "id"
     title <- obj .? "title"
-    description <- obj .? "description"
-    subtitle <- obj .? "subtitle"
-    body <- obj .? "body"
-    refs <- obj .? "refs"
+    shortText <- obj .? "short_text"
+    fullText <- obj .? "full_text"
     questions <- obj .? "questions"
-    pure $ Topic { id, title, description, subtitle, body, refs, questions }
+    pure $ Topic { id, title, shortText, fullText, questions }
 
 instance decodeJsonTopics :: DecodeJson Topics where
   decodeJson json = Topics <$> decodeJson json
@@ -55,10 +51,8 @@ instance encodeJsonTopic :: EncodeJson Topic where
   encodeJson (Topic t) =
        "id" := t.id
     ~> "title" := t.title
-    ~> "subtitle" := t.subtitle
-    ~> "description" := t.description
-    ~> "body" := t.body
-    ~> "refs" := t.refs
+    ~> "short_text" := t.shortText
+    ~> "full_text" := t.fullText
     ~> "questions" := t.questions
     ~> jsonEmptyObject
 

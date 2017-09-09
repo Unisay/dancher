@@ -7,13 +7,12 @@ import CSS (alignItems, fromString, margin, marginTop, padding, rem, (**), (?))
 import CSS.Common (center)
 import CSS.Stylesheet (CSS)
 import Data.Foldable (for_)
-import Data.List (List(Nil))
 import Markup (empty)
 import Prelude hiding (id,div)
 import Pux.DOM.Events (onClick)
 import Pux.DOM.HTML (HTML, style)
-import Text.Smolder.HTML (a, article, div, figure, h2, h4, i, nav, p, span, ol, li)
-import Text.Smolder.HTML.Attributes (className, href, id)
+import Text.Smolder.HTML (a, article, div, figure, h2, h4, i, nav, p, span)
+import Text.Smolder.HTML.Attributes (className, id)
 import Text.Smolder.Markup (text, (!), (#!))
 
 view :: Topic -> HTML Event
@@ -25,13 +24,7 @@ view topic@(Topic t) = do
         div ! className "content" $ do
           h2 $ a ! className "topic-title" #! onClick (Navigate R.Topics) $ text t.title
           do
-            h4 ! id "situation" ! className "subtitle is-4" $ text t.subtitle
-            p $ text t.body
-            if (Nil /= t.refs) then do
-              h4 ! id "refs" $ text "Ссылки по теме"
-              ol $ for_ t.refs \reference ->
-                li ! className "reference" $ a ! href reference $ text reference
-              else empty
+            p $ text t.fullText
             h4 ! id "questions" ! className "subtitle is-4" $ text "Вопросы"
             for_ t.questions \question -> do
               article ! className "question media" $ do
